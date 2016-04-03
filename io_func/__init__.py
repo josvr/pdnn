@@ -69,12 +69,12 @@ def preprocess_feature_and_label(feature, label, opts):
     feature = make_context(feature, opts['lcxt'], opts['rcxt'])
 
     if label is not None:
-        if opts.has_key('ignore-label'):
+        if 'ignore-label' in opts:
             ignore = opts['ignore-label']
             mask = numpy.array([x not in ignore for x in label])
             feature = feature[mask]
             label = label[mask]
-        if opts.has_key('map-label'):
+        if 'map-label' in opts:
             map = opts['map-label']
             label = numpy.array([map.get(x, x) for x in label])
 
@@ -99,7 +99,7 @@ def shuffle_across_partitions(feature_list, label_list):
     buffer = numpy.empty_like(feature_list[0][0])
     seed = 18877
     numpy.random.seed(seed)
-    for i in xrange(total - 1, 0, -1):
+    for i in range(total - 1, 0, -1):
         j = numpy.random.randint(i + 1)
         buffer[:] = feature_list[i / n][i % n]
         feature_list[i / n][i % n] = feature_list[j / n][j % n]

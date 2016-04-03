@@ -16,7 +16,7 @@
 import theano
 import theano.tensor as T
 from io_func.data_io import read_data_args, read_dataset
-from utils import parse_lrate, parse_activation, parse_conv_spec, activation_to_txt, string2bool
+from .utils import parse_lrate, parse_activation, parse_conv_spec, activation_to_txt, string2bool
 
 
 class RBMConfig():
@@ -70,20 +70,20 @@ class RBMConfig():
  
     # parse the arguments to get the values for various variables 
     def parse_config_common(self, arguments):
-        if arguments.has_key('gbrbm_learning_rate'):
+        if 'gbrbm_learning_rate' in arguments:
             self.gbrbm_learning_rate = float(arguments['gbrbm_learning_rate'])
-        if arguments.has_key('learning_rate'):
+        if 'learning_rate' in arguments:
             self.learning_rate = float(arguments['learning_rate'])
-        if arguments.has_key('batch_size'):
+        if 'batch_size' in arguments:
             self.batch_size = int(arguments['batch_size'])
-        if arguments.has_key('epoch_number'):
+        if 'epoch_number' in arguments:
             self.epochs = int(arguments['epoch_number'])
 
         # momentum setting is more complicated than dnn
-        if arguments.has_key('momentum'):
+        if 'momentum' in arguments:
             momentum_elements = arguments['momentum'].split(':')
             if len(momentum_elements) != 3:
-                print "Error: momentum string should have 3 values, e.g., 0.5:0.9:5"
+                print("Error: momentum string should have 3 values, e.g., 0.5:0.9:5")
                 exit(1)
             self.initial_momentum = float(momentum_elements[0])
             self.final_momentum = float(momentum_elements[1])
@@ -97,17 +97,17 @@ class RBMConfig():
 
         # parse pre-training layer number and the type of the first layer
         self.ptr_layer_number = len(self.hidden_layers_sizes)
-        if arguments.has_key('ptr_layer_number'):
+        if 'ptr_layer_number' in arguments:
             self.ptr_layer_number = int(arguments['ptr_layer_number'])
-        if arguments.has_key('first_layer_type') and arguments['first_layer_type'] == 'bb':
+        if 'first_layer_type' in arguments and arguments['first_layer_type'] == 'bb':
             self.first_layer_gb = False
 
         # parse various paths for model saving
-        if arguments.has_key('cfg_output_file'):
+        if 'cfg_output_file' in arguments:
             self.cfg_output_file = arguments['cfg_output_file']
-        if arguments.has_key('param_output_file'):
+        if 'param_output_file' in arguments:
             self.param_output_file = arguments['param_output_file']
-        if arguments.has_key('kaldi_output_file'):
+        if 'kaldi_output_file' in arguments:
             self.kaldi_output_file = arguments['kaldi_output_file']
 
 

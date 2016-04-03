@@ -24,7 +24,7 @@ import numpy
 import theano
 import theano.tensor as T
 from utils.utils import string2bool
-from model_io import log
+from .model_io import log
 from io_func import smart_open, preprocess_feature_and_label, shuffle_feature_and_label, shuffle_across_partitions
 
 class PfileDataRead(object):
@@ -53,7 +53,7 @@ class PfileDataRead(object):
     def read_pfile_info(self):
         line = self.file_read.readline()
         if line.startswith('-pfile_header') == False:
-            print "Error: PFile format is wrong, maybe the file was not generated successfully."
+            print("Error: PFile format is wrong, maybe the file was not generated successfully.")
             exit(1)
         self.header_size = int(line.split(' ')[-1])
         while (not line.startswith('-end')):
@@ -91,7 +91,7 @@ class PfileDataRead(object):
         self.feat_mats = []
         self.label_vecs = []
         self.file_read.seek(self.header_size)
-        for i in xrange(self.num_sentences):
+        for i in range(self.num_sentences):
             num_frames = sentence_offset[i+1] - sentence_offset[i]
             if self.file_read is file:  # Not a compressed file
                 sentence_array = numpy.fromfile(self.file_read, self.dtype, num_frames)
@@ -200,7 +200,7 @@ class PfileDataReadStream(object):
     def read_pfile_info(self):
         line = self.file_read.readline()
         if line.startswith('-pfile_header') == False:
-            print "Error: PFile format is wrong, maybe the file was not generated successfully."
+            print("Error: PFile format is wrong, maybe the file was not generated successfully.")
             exit(1)
         self.header_size = int(line.split(' ')[-1])
         while (not line.startswith('-end')):

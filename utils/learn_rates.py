@@ -13,7 +13,7 @@
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
 
-import cPickle
+import pickle
 
 from io_func import smart_open
 
@@ -229,10 +229,10 @@ class LearningRateAdaptive(LearningRate):
 # save and load the learning rate class
 def _lrate2file(lrate, filename='file.out'):
     with smart_open(filename, "wb") as output:
-        cPickle.dump(lrate, output, cPickle.HIGHEST_PROTOCOL)
+        pickle.dump(lrate, output, pickle.HIGHEST_PROTOCOL)
 
 def _file2lrate(filename='file.in'):
-    return cPickle.load(smart_open(filename,'rb'))
+    return pickle.load(smart_open(filename,'rb'))
 
 
 # functions to save and resume the learning rate

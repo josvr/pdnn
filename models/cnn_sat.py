@@ -13,7 +13,7 @@
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
 
-import cPickle
+import pickle
 import gzip
 import os
 import sys
@@ -32,8 +32,8 @@ from layers.logistic_sgd import LogisticRegression
 from layers.mlp import HiddenLayer
 
 from layers.conv import ConvLayer, ConvLayerForward
-from dnn import DNN
-from cnn import CNN
+from .dnn import DNN
+from .cnn import CNN
 
 class CNN_SAT(object):
 

@@ -13,7 +13,7 @@
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
 
-import cPickle
+import pickle
 import gzip
 import os
 import sys
@@ -42,8 +42,8 @@ if __name__ == '__main__':
     arguments = parse_arguments(arg_elements)
     required_arguments = ['in_scp_file', 'out_ark_file', 'nnet_param', 'nnet_cfg', 'layer_index']
     for arg in required_arguments:
-        if arguments.has_key(arg) == False:
-            print "Error: the argument %s has to be specified" % (arg); exit(1)
+        if (arg in arguments) == False:
+            print("Error: the argument %s has to be specified" % (arg)); exit(1)
 
     # mandatory arguments
     in_scp_file = arguments['in_scp_file']
@@ -53,14 +53,14 @@ if __name__ == '__main__':
     layer_index = int(arguments['layer_index'])
 
     # load network configuration
-    cfg = cPickle.load(smart_open(nnet_cfg,'r'))
+    cfg = pickle.load(smart_open(nnet_cfg,'r'))
     cfg.init_activation()
 
     # set up the model with model config
     log('> ... setting up the model and loading parameters')
     numpy_rng = numpy.random.RandomState(89677)
     theano_rng = RandomStreams(numpy_rng.randint(2 ** 30))
-    cfg = cPickle.load(smart_open(nnet_cfg,'r'))
+    cfg = pickle.load(smart_open(nnet_cfg,'r'))
     model = None
     if cfg.model_type == 'DNN':
         model = DNN(numpy_rng=numpy_rng, theano_rng = theano_rng, cfg = cfg)

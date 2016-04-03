@@ -13,9 +13,10 @@
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
 
-import cPickle
+import pickle
 import gzip
 import os
+import os.path
 import sys
 import time
 
@@ -41,8 +42,8 @@ if __name__ == '__main__':
     arguments = parse_arguments(arg_elements)
     required_arguments = ['train_data', 'valid_data', 'nnet_spec', 'wdir']
     for arg in required_arguments:
-        if arguments.has_key(arg) == False:
-            print "Error: the argument %s has to be specified" % (arg); exit(1)
+        if (arg in arguments) == False:
+            print("Error: the argument %s has to be specified" % (arg)); exit(1)
 
     # mandatory arguments
     train_data_spec = arguments['train_data']
@@ -58,7 +59,7 @@ if __name__ == '__main__':
     # parse pre-training options
     # pre-training files and layer number (how many layers are set to the pre-training parameters)
     ptr_layer_number = 0; ptr_file = ''
-    if arguments.has_key('ptr_file') and arguments.has_key('ptr_layer_number'):
+    if 'ptr_file' in arguments and 'ptr_layer_number' in arguments:
         ptr_file = arguments['ptr_file']
         ptr_layer_number = int(arguments['ptr_layer_number'])
 
@@ -120,5 +121,7 @@ if __name__ == '__main__':
         log('> ... the final Kaldi model is ' + cfg.kaldi_output_file) 
 
     # remove the tmp files (which have been generated from resuming training) 
-    os.remove(wdir + '/nnet.tmp')
-    os.remove(wdir + '/training_state.tmp') 
+    if os.path.exists(wdir + '/nnet.tmp'):
+        os.remove(wdir + '/nnet.tmp')
+    if os.path.exists(wdir + '/training_state.tmp'):
+        os.remove(wdir + '/training_state.tmp') 

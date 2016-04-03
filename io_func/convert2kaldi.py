@@ -17,7 +17,7 @@ import numpy as np
 import os
 import sys
 
-from StringIO import StringIO
+from io import StringIO
 import json
 
 from io_func import smart_open
@@ -39,29 +39,29 @@ def _nnet2kaldi(nnet_spec, set_layer_num = -1, filein='nnet.in',
     with smart_open(filein, 'rb') as fp:
         nnet_dict = json.load(fp)
     fout = smart_open(fileout, 'wb')
-    for i in xrange(layer_num - 1):
+    for i in range(layer_num - 1):
         input_size = int(layers[i])
         output_size = int(layers[i + 1])
         W_layer = []
         b_layer = ''
-        for rowX in xrange(output_size):
+        for rowX in range(output_size):
             W_layer.append('')
 
         dict_key = str(i) + ' ' + activation + ' W'
         matrix_rows = nnet_dict[dict_key].split('\n')
-        for x in xrange(input_size):
+        for x in range(input_size):
             elements = matrix_rows[x].split(' ')
-            for t in xrange(output_size):
+            for t in range(output_size):
                 W_layer[t] = W_layer[t] + str(float(elements[t])) + ' '
 
         dict_key = str(i) + ' ' + activation + ' b'
         vector_rows = nnet_dict[dict_key].split('\n')
-        for x in xrange(output_size):
+        for x in range(output_size):
             b_layer = b_layer + str(float(vector_rows[x])) + ' '
 
         fout.write('<affinetransform> ' + str(output_size) + ' ' + str(input_size) + '\n')
         fout.write('[' + '\n')
-        for x in xrange(output_size):
+        for x in range(output_size):
             fout.write(W_layer[x].strip() + '\n')
         fout.write(']' + '\n')
         fout.write('[ ' + b_layer.strip() + ' ]' + '\n')
@@ -73,25 +73,25 @@ def _nnet2kaldi(nnet_spec, set_layer_num = -1, filein='nnet.in',
         output_size = int(layers[-1])
         W_layer = []
         b_layer = ''
-        for rowX in xrange(output_size):
+        for rowX in range(output_size):
             W_layer.append('')
 
         dict_key = 'logreg W'
         matrix_rows = nnet_dict[dict_key].split('\n')
-        for x in xrange(input_size):
+        for x in range(input_size):
             elements = matrix_rows[x].split(' ')
-            for t in xrange(output_size):
+            for t in range(output_size):
                 W_layer[t] = W_layer[t] + str(float(elements[t])) + ' '
 
 
         dict_key = 'logreg b'
         vector_rows = nnet_dict[dict_key].split('\n')
-        for x in xrange(output_size):
+        for x in range(output_size):
             b_layer = b_layer + str(float(vector_rows[x])) + ' '
 
         fout.write('<affinetransform> ' + str(output_size) + ' ' + str(input_size) + '\n')
         fout.write('[' + '\n')
-        for x in xrange(output_size):
+        for x in range(output_size):
             fout.write(W_layer[x].strip() + '\n')
         fout.write(']' + '\n')
         fout.write('[ ' + b_layer.strip() + ' ]' + '\n')
@@ -114,30 +114,30 @@ def _nnet2kaldi_maxout(nnet_spec, pool_size = 1, set_layer_num = -1,
     with smart_open(filein, 'rb') as fp:
         nnet_dict = json.load(fp)
     fout = smart_open(fileout, 'wb')
-    for i in xrange(layer_num - 1):
+    for i in range(layer_num - 1):
         input_size = int(layers[i])
         output_size = int(layers[i + 1]) * pool_size
         W_layer = []
         b_layer = ''
-        for rowX in xrange(output_size):
+        for rowX in range(output_size):
             W_layer.append('')
 
         dict_key = str(i) + ' ' + activation + ' W'
         matrix_rows = nnet_dict[dict_key].split('\n')
-        for x in xrange(input_size):
+        for x in range(input_size):
             elements = matrix_rows[x].split(' ')
-            for t in xrange(output_size):
+            for t in range(output_size):
                 W_layer[t] = W_layer[t] + str(float(elements[t])) + ' '
 
 
         dict_key = str(i) + ' ' + activation + ' b'
         vector_rows = nnet_dict[dict_key].split('\n')
-        for x in xrange(output_size):
+        for x in range(output_size):
             b_layer = b_layer + str(float(vector_rows[x])) + ' '
 
         fout.write('<affinetransform> ' + str(output_size) + ' ' + str(input_size) + '\n')
         fout.write('[' + '\n')
-        for x in xrange(output_size):
+        for x in range(output_size):
             fout.write(W_layer[x].strip() + '\n')
         fout.write(']' + '\n')
         fout.write('[ ' + b_layer.strip() + ' ]' + '\n')
@@ -148,25 +148,25 @@ def _nnet2kaldi_maxout(nnet_spec, pool_size = 1, set_layer_num = -1,
         output_size = int(layers[-1])
         W_layer = []
         b_layer = ''
-        for rowX in xrange(output_size):
+        for rowX in range(output_size):
             W_layer.append('')
 
         dict_key = 'logreg W'
         matrix_rows = nnet_dict[dict_key].split('\n')
-        for x in xrange(input_size):
+        for x in range(input_size):
             elements = matrix_rows[x].split(' ')
-            for t in xrange(output_size):
+            for t in range(output_size):
                 W_layer[t] = W_layer[t] + str(float(elements[t])) + ' '
 
 
         dict_key = 'logreg b'
         vector_rows = nnet_dict[dict_key].split('\n')
-        for x in xrange(output_size):
+        for x in range(output_size):
             b_layer = b_layer + str(float(vector_rows[x])) + ' '
 
         fout.write('<affinetransform> ' + str(output_size) + ' ' + str(input_size) + '\n')
         fout.write('[' + '\n')
-        for x in xrange(output_size):
+        for x in range(output_size):
             fout.write(W_layer[x].strip() + '\n')
         fout.write(']' + '\n')
         fout.write('[ ' + b_layer.strip() + ' ]' + '\n')
@@ -180,7 +180,7 @@ def _nnet2kaldi_direct(dnn, output_layer_number = -1, fileout='nnet.out'):
     if output_layer_number == -1:
         output_layer_number = layer_number
 
-    for i in xrange(output_layer_number):
+    for i in range(output_layer_number):
         activation_text = '<' + dnn.cfg.activation_text + '>'
 #        activation_text = '<' + activation_text + '>'
         if i == (layer_number-1):   # we assume that the last layer is a softmax layer
@@ -189,19 +189,19 @@ def _nnet2kaldi_direct(dnn, output_layer_number = -1, fileout='nnet.out'):
         b_vec = dnn.sigmoid_layers[i].b.get_value()
         input_size, output_size = W_mat.shape
         W_layer = []; b_layer = ''
-        for rowX in xrange(output_size):
+        for rowX in range(output_size):
             W_layer.append('')
 
-        for x in xrange(input_size):
-            for t in xrange(output_size):
+        for x in range(input_size):
+            for t in range(output_size):
                 W_layer[t] = W_layer[t] + str(W_mat[x][t]) + ' '
 
-        for x in xrange(output_size):
+        for x in range(output_size):
             b_layer = b_layer + str(b_vec[x]) + ' '
 
         fout.write('<affinetransform> ' + str(output_size) + ' ' + str(input_size) + '\n')
         fout.write('[' + '\n')
-        for x in xrange(output_size):
+        for x in range(output_size):
             fout.write(W_layer[x].strip() + '\n')
         fout.write(']' + '\n')
         fout.write('[ ' + b_layer.strip() + ' ]' + '\n')

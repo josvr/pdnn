@@ -13,7 +13,7 @@
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
 
-import cPickle
+import pickle
 import gzip
 import os
 import sys
@@ -26,7 +26,7 @@ import json
 import theano
 import theano.tensor as T
 
-from dnn import DNN
+from .dnn import DNN
 
 class DNN_2Tower(object):
 

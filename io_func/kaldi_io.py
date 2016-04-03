@@ -23,7 +23,7 @@ import struct
 import numpy
 import theano
 import theano.tensor as T
-from model_io import log
+from .model_io import log
 from io_func import smart_open, preprocess_feature_and_label, shuffle_feature_and_label
 
 class KaldiDataRead(object):
@@ -32,7 +32,7 @@ class KaldiDataRead(object):
 
         self.scp_file = scp_list[0]     # path to the .scp file
         self.read_opts = read_opts
-        if read_opts.has_key('label'):
+        if 'label' in read_opts:
             self.ali_file = read_opts['label']  # path to the alignment file
             self.ali_provided = True    # if alignment is provided
         else:
@@ -80,7 +80,7 @@ class KaldiDataRead(object):
         # now start to read the feature matrix into a numpy matrix
         header = struct.unpack('<xcccc', ark_read_buffer.read(5))
         if header[0] != "B":
-            print "Input .ark file is not binary"; exit(1)
+            print("Input .ark file is not binary"); exit(1)
 
         rows = 0; cols= 0
         m, rows = struct.unpack('<bi', ark_read_buffer.read(5))
@@ -141,7 +141,7 @@ class KaldiDataRead(object):
             if utt_id == '':    # No more utterances available
                 self.end_reading = True
                 break
-            if self.ali_provided and (self.alignment.has_key(utt_id) is False):
+            if self.ali_provided and ((utt_id in self.alignment) is False):
                 continue
             rows = len(utt_mat)
 

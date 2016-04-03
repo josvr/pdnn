@@ -14,7 +14,7 @@
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
 
-import cPickle
+import pickle
 import gzip
 import os
 import sys
@@ -43,8 +43,8 @@ if __name__ == '__main__':
     arguments = parse_arguments(arg_elements)
     required_arguments = ['data', 'nnet_param', 'nnet_cfg', 'output_file', 'layer_index', 'batch_size']
     for arg in required_arguments:
-        if arguments.has_key(arg) == False:
-            print "Error: the argument %s has to be specified" % (arg); exit(1)
+        if (arg in arguments) == False:
+            print("Error: the argument %s has to be specified" % (arg)); exit(1)
 
     # mandatory arguments
     data_spec = arguments['data']
@@ -53,13 +53,13 @@ if __name__ == '__main__':
     output_file = arguments['output_file']
     layer_index = int(arguments['layer_index'])
     batch_size = float(arguments['batch_size'])
-    argmax = arguments.has_key('argmax') and string2bool(arguments['argmax'])
+    argmax = 'argmax' in arguments and string2bool(arguments['argmax'])
 
     # load network configuration and set up the model
     log('> ... setting up the model and loading parameters')
     numpy_rng = numpy.random.RandomState(89677)
     theano_rng = RandomStreams(numpy_rng.randint(2 ** 30))
-    cfg = cPickle.load(smart_open(nnet_cfg,'r'))
+    cfg = pickle.load(smart_open(nnet_cfg,'rb'))
     cfg.init_activation()
     model = None
     if cfg.model_type == 'DNN':
@@ -83,7 +83,7 @@ if __name__ == '__main__':
         cfg.test_sets.load_next_partition(cfg.test_xy)
         batch_num = int(math.ceil(1.0 * cfg.test_sets.cur_frame_num / batch_size))
 
-        for batch_index in xrange(batch_num):  # loop over mini-batches
+        for batch_index in range(batch_num):  # loop over mini-batches
             start_index = batch_index * batch_size
             end_index = min((batch_index+1) * batch_size, cfg.test_sets.cur_frame_num)  # the residue may be smaller than a mini-batch
             output = extract_func(cfg.test_x.get_value()[start_index:end_index])
@@ -95,6 +95,6 @@ if __name__ == '__main__':
 
     # output the feature representations using pickle
     f = smart_open(output_file, 'wb')
-    cPickle.dump(output_mat, f, cPickle.HIGHEST_PROTOCOL)
+    pickle.dump(output_mat, f, pickle.HIGHEST_PROTOCOL)
 
     log('> ... the features are stored in ' + output_file)

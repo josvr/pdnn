@@ -15,7 +15,7 @@
 # limitations under the License.
 
 import theano.tensor as T
-from learn_rates import LearningRateConstant, LearningRateExpDecay, LearningMinLrate, LearningFixedLrate, LearningRateAdaptive
+from .learn_rates import LearningRateConstant, LearningRateExpDecay, LearningMinLrate, LearningFixedLrate, LearningRateAdaptive
 from io_func import smart_open
 
 def string2bool(string):
@@ -23,8 +23,8 @@ def string2bool(string):
 
 def parse_arguments(arg_elements):
     args = {}
-    arg_num = len(arg_elements) / 2
-    for i in xrange(arg_num):
+    arg_num = int(len(arg_elements) / 2)
+    for i in range(arg_num):
         key = arg_elements[2*i].replace("--","").replace("-", "_");
         args[key] = arg_elements[2*i+1]
     return args
@@ -34,7 +34,7 @@ def parse_ignore_label(ignore_string):
     for x in ignore_string.split(':'):
         if '-' in x:
             start, end = (int(y) for y in x.split('-'))
-            ignore_set.update(range(start, end + 1))
+            ignore_set.update(list(range(start, end + 1)))
         else:
             ignore_set.add(int(x))
     return ignore_set
@@ -199,7 +199,7 @@ def parse_data_spec_mtl(data_spec):
     field_split = data_spec.split(',')
     task_split = field_split[0].split('|')
     data_spec_rest = data_spec.replace(field_split[0],'')
-    data_spec_array = [task_split[n] + data_spec_rest for n in xrange(len(task_split))]
+    data_spec_array = [task_split[n] + data_spec_rest for n in range(len(task_split))]
     return data_spec_array
 
 # parse network specification for multiple task learning
@@ -207,6 +207,6 @@ def parse_nnet_spec_mtl(shared_spec, indiv_spec):
     nnet_spec_array = []
     shared_split = shared_spec.split(':')
     task_split = indiv_spec.split('|')
-    for n in xrange(len(task_split)):
+    for n in range(len(task_split)):
         nnet_spec_array.append(shared_spec + ':' + task_split[n])
     return nnet_spec_array, len(shared_split)-1

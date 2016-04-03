@@ -13,7 +13,7 @@
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
 
-import cPickle
+import pickle
 import gzip
 import os
 import sys
@@ -32,7 +32,7 @@ class ConvLayer(object):
     def __init__(self, numpy_rng=None, input = None, input_shape=(256, 1,28,28), filter_shape=(2, 1, 5, 5), 
                  poolsize=(1, 1), activation=T.tanh,
                  flatten = False, border_mode = 'valid',
-		 non_maximum_erasing = False, W=None, b=None,
+                 non_maximum_erasing = False, W=None, b=None,
                  use_fast = False, testing = False):
 
         self.type = 'conv'
@@ -56,7 +56,7 @@ class ConvLayer(object):
         fan_out = (filter_shape[0] * numpy.prod(filter_shape[2:]) /
                    numpy.prod(poolsize))
         # initialize weights with random weights
-	if W is None:
+        if W is None:
             W_bound = numpy.sqrt(6. / (fan_in + fan_out))
             initial_W = numpy.asarray( numpy_rng.uniform(
                                    low=-W_bound, high=W_bound,
@@ -69,17 +69,17 @@ class ConvLayer(object):
 
         self.W = W
         # the bias is a 1D tensor -- one bias per output feature map
-	if b is None:
+        if b is None:
             b_values = numpy.zeros((filter_shape[0],), dtype=theano.config.floatX)
             b = theano.shared(value=b_values, name='b')
-	self.b = b
+        self.b = b
 
         # for momentum
-	self.delta_W = theano.shared(value = numpy.zeros(filter_shape,
-		                     dtype=theano.config.floatX), name='delta_W')
+        self.delta_W = theano.shared(value = numpy.zeros(filter_shape,
+                                     dtype=theano.config.floatX), name='delta_W')
 
-	self.delta_b = theano.shared(value = numpy.zeros_like(self.b.get_value(borrow=True),
-	                             dtype=theano.config.floatX), name='delta_b')
+        self.delta_b = theano.shared(value = numpy.zeros_like(self.b.get_value(borrow=True),
+                                     dtype=theano.config.floatX), name='delta_b')
 
         # convolve input feature maps with filters
         if use_fast:
@@ -103,13 +103,13 @@ class ConvLayer(object):
 
             y_out = activation(conv_out + self.b.dimshuffle('x', 0, 'x', 'x'))
             # downsample each feature map individually, using maxpooling
-	    pooled_out = downsample.max_pool_2d(input=y_out, ds=poolsize, ignore_border=True)
+            pooled_out = downsample.max_pool_2d(input=y_out, ds=poolsize, ignore_border=True)
         
-	if non_maximum_erasing:
-	    ds = tuple(poolsize)
-	    po = pooled_out.repeat(ds[0], axis = 2).repeat(ds[1], axis = 3)
-	    self.output = T.eq(y_out, po) * y_out
-	else:
+        if non_maximum_erasing:
+            ds = tuple(poolsize)
+            po = pooled_out.repeat(ds[0], axis = 2).repeat(ds[1], axis = 3)
+            self.output = T.eq(y_out, po) * y_out
+        else:
             self.output = pooled_out
 
         if flatten:

@@ -13,7 +13,7 @@
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
 
-import cPickle
+import pickle
 import gzip
 import os
 import sys
@@ -41,8 +41,8 @@ if __name__ == '__main__':
     arguments = parse_arguments(arg_elements)
     required_arguments = ['in_scp_file', 'out_ark_file', 'cnn_param_file', 'cnn_cfg_file']
     for arg in required_arguments:
-        if arguments.has_key(arg) == False:
-            print "Error: the argument %s has to be specified" % (arg); exit(1)
+        if (arg in arguments) == False:
+            print("Error: the argument %s has to be specified" % (arg)); exit(1)
 
     # mandatory arguments
     in_scp_file = arguments['in_scp_file']
@@ -50,16 +50,16 @@ if __name__ == '__main__':
     cnn_param_file = arguments['cnn_param_file']
     cnn_cfg_file = arguments['cnn_cfg_file']
     # network structure
-    cfg = cPickle.load(smart_open(cnn_cfg_file,'r'))
+    cfg = pickle.load(smart_open(cnn_cfg_file,'r'))
 
     conv_configs = cfg.conv_layer_configs
     conv_layer_number = len(conv_configs)
-    for i in xrange(conv_layer_number):
+    for i in range(conv_layer_number):
         conv_configs[i]['activation'] = cfg.conv_activation
 
     # whether to use the fast mode
     use_fast = cfg.use_fast
-    if arguments.has_key('use_fast'):
+    if 'use_fast' in arguments:
         use_fast = string2bool(arguments['use_fast'])
 
     kaldiread = KaldiReadIn(in_scp_file)

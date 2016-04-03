@@ -13,7 +13,7 @@
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
 
-import cPickle
+import pickle
 import gzip
 import os
 import sys
@@ -46,7 +46,7 @@ class SdA(object):
         # allocate symbolic variables for the data
         self.x = dnn.x
 
-        for i in xrange(self.hidden_layers_number):
+        for i in range(self.hidden_layers_number):
             # the size of the input is either the number of hidden units of
             # the layer below, or the input size if we are on the first layer
             if i == 0:
@@ -128,7 +128,7 @@ class SdA_maxout(object):
         self.x = T.matrix('x')
         self.y = T.ivector('y')
 
-        for i in xrange(self.n_layers):
+        for i in range(self.n_layers):
             # construct the sigmoidal layer
 
             # the size of the input is either the number of hidden units of

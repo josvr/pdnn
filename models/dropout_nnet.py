@@ -13,7 +13,7 @@
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
 
-import cPickle
+import pickle
 import gzip
 import os
 import sys
@@ -62,7 +62,7 @@ class DNN_Dropout(object):
         self.x = T.matrix('x')
         self.y = T.ivector('y')
 
-        for i in xrange(self.hidden_layers_number):
+        for i in range(self.hidden_layers_number):
             # construct the hidden layer
             if i == 0:
                 input_size = self.n_ins
@@ -135,12 +135,12 @@ class DNN_Dropout(object):
         self.errors = self.logLayer.errors(self.y)
 
         if self.l1_reg is not None:
-            for i in xrange(self.hidden_layers_number):
+            for i in range(self.hidden_layers_number):
                 W = self.layers[i].W
                 self.finetune_cost += self.l1_reg * (abs(W).sum())
 
         if self.l2_reg is not None:
-            for i in xrange(self.hidden_layers_number):
+            for i in range(self.hidden_layers_number):
                 W = self.layers[i].W
                 self.finetune_cost += self.l2_reg * T.sqr(W).sum()
 
@@ -164,7 +164,7 @@ class DNN_Dropout(object):
             updates[param] = param + updates[dparam]
 
         if self.max_col_norm is not None:
-            for i in xrange(self.hidden_layers_number):
+            for i in range(self.hidden_layers_number):
                 W = self.layers[i].W
                 if W in updates:
                     updated_W = updates[W]
@@ -212,7 +212,7 @@ class DNN_Dropout(object):
             output_layer_number = layer_number
 
         fout = smart_open(file_path, 'wb')
-        for i in xrange(output_layer_number):
+        for i in range(output_layer_number):
             # decide the dropout factor for this layer
             dropout_factor = 0.0
             if i == 0:
@@ -227,19 +227,19 @@ class DNN_Dropout(object):
             b_vec = self.layers[i].b.get_value()
             input_size, output_size = W_mat.shape
             W_layer = []; b_layer = ''
-            for rowX in xrange(output_size):
+            for rowX in range(output_size):
                 W_layer.append('')
 
-            for x in xrange(input_size):
-                for t in xrange(output_size):
+            for x in range(input_size):
+                for t in range(output_size):
                     W_layer[t] = W_layer[t] + str(W_mat[x][t]) + ' '
 
-            for x in xrange(output_size):
+            for x in range(output_size):
                 b_layer = b_layer + str(b_vec[x]) + ' '
 
             fout.write('<affinetransform> ' + str(output_size) + ' ' + str(input_size) + '\n')
             fout.write('[' + '\n')
-            for x in xrange(output_size):
+            for x in range(output_size):
                 fout.write(W_layer[x].strip() + '\n')
             fout.write(']' + '\n')
             fout.write('[ ' + b_layer.strip() + ' ]' + '\n')

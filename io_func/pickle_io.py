@@ -13,7 +13,7 @@
 # MERCHANTABLITY OR NON-INFRINGEMENT.
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
-import cPickle
+import pickle
 import gzip
 import os
 import sys, re
@@ -23,7 +23,7 @@ import numpy
 import theano
 import theano.tensor as T
 from utils.utils import string2bool
-from model_io import log
+from .model_io import log
 from io_func import smart_open, preprocess_feature_and_label, shuffle_feature_and_label
 
 class PickleDataRead(object):
@@ -46,7 +46,7 @@ class PickleDataRead(object):
         pfile_path = self.pfile_path_list[self.cur_pfile_index]
         if self.feat_mat is None or len(self.pfile_path_list) > 1:
             fopen = smart_open(pfile_path, 'rb')
-            self.feat_mat, self.label_vec = cPickle.load(fopen)
+            self.feat_mat, self.label_vec = pickle.load(fopen)
             fopen.close()
             shared_x, shared_y = shared_xy
 

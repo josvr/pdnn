@@ -13,7 +13,7 @@
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
 
-import cPickle
+import pickle
 import gzip
 import os
 import sys
@@ -54,8 +54,8 @@ if __name__ == '__main__':
 
     required_arguments = ['train_data', 'valid_data', 'task_number', 'shared_nnet_spec', 'indiv_nnet_spec', 'wdir']
     for arg in required_arguments:
-        if arguments.has_key(arg) == False:
-            print "Error: the argument %s has to be specified" % (arg); exit(1)
+        if (arg in arguments) == False:
+            print("Error: the argument %s has to be specified" % (arg)); exit(1)
 
     # mandatory arguments
     train_data_spec = arguments['train_data']; valid_data_spec = arguments['valid_data']
@@ -72,13 +72,13 @@ if __name__ == '__main__':
     train_data_spec_array = parse_data_spec_mtl(train_data_spec)
     valid_data_spec_array = parse_data_spec_mtl(valid_data_spec)
     if len(train_data_spec_array) != task_number or len(valid_data_spec_array) != task_number:
-        print "Error: #datasets in data specification doesn't match #tasks"; exit(1)
+        print("Error: #datasets in data specification doesn't match #tasks"); exit(1)
     # split shared_spec ans indiv_spec into individual task's networks
     nnet_spec_array, shared_layers_num = parse_nnet_spec_mtl(shared_spec, indiv_spec)   
     if len(nnet_spec_array) != task_number:
-        print "Error: #networks specified by --indiv-spec doesn't match #tasks"; exit(1)
+        print("Error: #networks specified by --indiv-spec doesn't match #tasks"); exit(1)
     # parse network configuration from arguments, and initialize data reading
-    for n in xrange(task_number):
+    for n in range(task_number):
         network_config = NetworkConfig()
         network_config.parse_config_dnn(arguments, nnet_spec_array[n])
         network_config.init_data_reading(train_data_spec_array[n], valid_data_spec_array[n]) 
@@ -87,13 +87,13 @@ if __name__ == '__main__':
     numpy_rng = numpy.random.RandomState(89677)
     theano_rng = RandomStreams(numpy_rng.randint(2 ** 30))
     resume_training = False; resume_tasks = []  # if we are resuming training, then MLT only operates on the terminated tasks
-    for n in xrange(task_number):
+    for n in range(task_number):
         log('> ... building the model for task %d' % (n))
         cfg = config_array[n]
         # set up the model
         dnn_shared = None; shared_layers = []
         if n > 0:
-            dnn_shared = dnn_array[0]; shared_layers = [m for m in xrange(shared_layers_num)]
+            dnn_shared = dnn_array[0]; shared_layers = [m for m in range(shared_layers_num)]
         if cfg.do_dropout:
             dnn = DNN_Dropout(numpy_rng=numpy_rng, theano_rng = theano_rng, cfg = cfg,
                               dnn_shared = dnn_shared, shared_layers = shared_layers)
@@ -118,27 +118,27 @@ if __name__ == '__main__':
     # we assume that we only pre-train the shared layers; thus we only use dnn_array[0] to load the parameters
     # because the parameters are shared across the tasks
     ptr_layer_number = 0; ptr_file = ''
-    if arguments.has_key('ptr_file') and arguments.has_key('ptr_layer_number'):
+    if 'ptr_file' in arguments and 'ptr_layer_number' in arguments:
         ptr_file = arguments['ptr_file']; ptr_layer_number = int(arguments['ptr_layer_number'])
     if (ptr_layer_number > 0) and (resume_training is False):
         _file2nnet(dnn_array[0].layers, set_layer_num = ptr_layer_number, filename = ptr_file)
 
     log('> ... finetuning the model')
-    train_error_array = [[] for n in xrange(task_number)]
-    active_tasks = [n for n in xrange(task_number)]  # the tasks with 0 learning rate are not considered
+    train_error_array = [[] for n in range(task_number)]
+    active_tasks = [n for n in range(task_number)]  # the tasks with 0 learning rate are not considered
     if resume_training:
         active_tasks = resume_tasks
 
     while len(active_tasks) != 0:  # still have tasks which have non-zero learning rate
         # record the mini-batch numbers of the read-in data chunk, on each of the active tasks
-        batch_numbers_per_chunk = [0 for n in xrange(task_number)]
+        batch_numbers_per_chunk = [0 for n in range(task_number)]
         for n in active_tasks:
             config_array[n].train_sets.load_next_partition(config_array[n].train_xy)
             batch_numbers_per_chunk[n] = config_array[n].train_sets.cur_frame_num / config_array[n].batch_size
         # although we set one single trunk size, the actual size of data chunks we read in may differ
         # across the tasks. this is because we may reach the end of the data file. thus, we loop over
         # the max number of mini-batches, but do the checking on each individual task 
-        for batch_index in xrange(max(batch_numbers_per_chunk)):  # loop over mini-batches
+        for batch_index in range(max(batch_numbers_per_chunk)):  # loop over mini-batches
             for n in active_tasks:
                 if batch_index < batch_numbers_per_chunk[n]:
                     train_error_array[n].append(train_fn_array[n](index=batch_index, learning_rate = config_array[n].lrate.get_rate(), momentum = config_array[n].momentum))

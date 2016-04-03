@@ -13,7 +13,7 @@
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
 
-import cPickle
+import pickle
 import gzip
 import os
 import sys
@@ -48,8 +48,8 @@ if __name__ == '__main__':
     arguments = parse_arguments(arg_elements)
     required_arguments = ['train_data', 'valid_data', 'si_nnet_spec', 'si_conv_nnet_spec', 'wdir', 'adapt_nnet_spec', 'init_model']
     for arg in required_arguments:
-        if arguments.has_key(arg) == False:
-            print "Error: the argument %s has to be specified" % (arg); exit(1)
+        if (arg in arguments) == False:
+            print("Error: the argument %s has to be specified" % (arg)); exit(1)
 
     # mandatory arguments
     train_data_spec = arguments['train_data']; valid_data_spec = arguments['valid_data']
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     cfg_adapt = NetworkConfig()
     net_split = adapt_nnet_spec.split(':')
     adapt_nnet_spec = ''
-    for n in xrange(len(net_split) - 1):
+    for n in range(len(net_split) - 1):
         adapt_nnet_spec += net_split[n] + ':'
     cfg_adapt.parse_config_dnn(arguments, adapt_nnet_spec + '0')
 

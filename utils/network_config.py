@@ -17,8 +17,8 @@
 import theano
 import theano.tensor as T
 from io_func.data_io import read_data_args, read_dataset
-from learn_rates import LearningRateExpDecay
-from utils import parse_lrate, parse_activation, parse_conv_spec, activation_to_txt, string2bool
+from .learn_rates import LearningRateExpDecay
+from .utils import parse_lrate, parse_activation, parse_conv_spec, activation_to_txt, string2bool
 
 class NetworkConfig():
 
@@ -104,21 +104,21 @@ class NetworkConfig():
 
     def parse_config_common(self, arguments):
         # parse batch_size, momentum, learning rate and regularization
-        if arguments.has_key('batch_size'):
+        if 'batch_size' in arguments:
             self.batch_size = int(arguments['batch_size'])
-        if arguments.has_key('momentum'):
+        if 'momentum' in arguments:
             self.momentum = float(arguments['momentum'])
-        if arguments.has_key('lrate'):
+        if 'lrate' in arguments:
             self.lrate = parse_lrate(arguments['lrate'])
-        if arguments.has_key('l1_reg'):
+        if 'l1_reg' in arguments:
             self.l1_reg = float(arguments['l1_reg'])
-        if arguments.has_key('l2_reg'):
+        if 'l2_reg' in arguments:
             self.l2_reg = float(arguments['l2_reg'])
-        if arguments.has_key('max_col_norm'):
+        if 'max_col_norm' in arguments:
             self.max_col_norm = float(arguments['max_col_norm'])
 
         # parse activation function, including maxout
-        if arguments.has_key('activation'):
+        if 'activation' in arguments:
             self.activation_text = arguments['activation']
             self.activation = parse_activation(arguments['activation'])
             if arguments['activation'].startswith('maxout'):
@@ -129,24 +129,24 @@ class NetworkConfig():
         # parse dropout. note that dropout can be applied to the input features only when dropout is also
         # applied to hidden-layer outputs at the same time. that is, you cannot apply dropout only to the
         # input features
-        if arguments.has_key('dropout_factor'):
+        if 'dropout_factor' in arguments:
             self.do_dropout = True
             factors = arguments['dropout_factor'].split(',')
             self.dropout_factor = [float(factor) for factor in factors]
-            if arguments.has_key('input_dropout_factor'):
+            if 'input_dropout_factor' in arguments:
                 self.input_dropout_factor = float(arguments['input_dropout_factor'])
 
-        if arguments.has_key('cfg_output_file'):
+        if 'cfg_output_file' in arguments:
             self.cfg_output_file = arguments['cfg_output_file']
-        if arguments.has_key('param_output_file'):
+        if 'param_output_file' in arguments:
             self.param_output_file = arguments['param_output_file']
-        if arguments.has_key('kaldi_output_file'):
+        if 'kaldi_output_file' in arguments:
             self.kaldi_output_file = arguments['kaldi_output_file']
 
-        if arguments.has_key('model_save_step'):
+        if 'model_save_step' in arguments:
             self.model_save_step = int(arguments['model_save_step'])
 
-        if arguments.has_key('non_updated_layers'):
+        if 'non_updated_layers' in arguments:
             layers = arguments['non_updated_layers'].split(",")
             self.non_updated_layers = [int(layer) for layer in layers]
 
@@ -164,11 +164,11 @@ class NetworkConfig():
         self.conv_layer_configs = parse_conv_spec(conv_nnet_spec, self.batch_size)
         # parse convolutional layer activation
         # parse activation function, including maxout
-        if arguments.has_key('conv_activation'):
+        if 'conv_activation' in arguments:
             self.conv_activation_text = arguments['conv_activation']
             self.conv_activation = parse_activation(arguments['conv_activation'])
             # maxout not supported yet
         # whether we use the fast version of convolution
-        if arguments.has_key('use_fast'):
+        if 'use_fast' in arguments:
             self.use_fast = string2bool(arguments['use_fast'])
 

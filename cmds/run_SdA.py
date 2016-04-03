@@ -13,7 +13,7 @@
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
 
-import cPickle
+import pickle
 import gzip
 import os
 import sys
@@ -40,8 +40,8 @@ if __name__ == '__main__':
     arguments = parse_arguments(arg_elements)
     required_arguments = ['train_data', 'nnet_spec', 'wdir']
     for arg in required_arguments:
-        if arguments.has_key(arg) == False:
-            print "Error: the argument %s has to be specified" % (arg); exit(1)
+        if (arg in arguments) == False:
+            print("Error: the argument %s has to be specified" % (arg)); exit(1)
 
     train_data_spec = arguments['train_data']
     nnet_spec = arguments['nnet_spec']
@@ -85,7 +85,7 @@ if __name__ == '__main__':
             c = []
             while (not cfg.train_sets.is_finish()):
                 cfg.train_sets.load_next_partition(cfg.train_xy)
-                for batch_index in xrange(cfg.train_sets.cur_frame_num / cfg.batch_size):  # loop over mini-batches
+                for batch_index in range(cfg.train_sets.cur_frame_num / cfg.batch_size):  # loop over mini-batches
                     c.append(pretraining_fns[i](index = batch_index,
                                                 corruption = cfg.corruption_levels[i],
                                                 lr = cfg.learning_rates[i],

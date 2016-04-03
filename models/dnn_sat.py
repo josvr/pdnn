@@ -13,7 +13,7 @@
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
 
-import cPickle
+import pickle
 import gzip
 import os
 import sys
@@ -28,7 +28,7 @@ from theano.tensor.shared_randomstreams import RandomStreams
 
 from layers.logistic_sgd import LogisticRegression
 from layers.mlp import HiddenLayer, DropoutHiddenLayer, _dropout_from_layer
-from dnn import DNN
+from .dnn import DNN
 
 class DNN_SAT(object):
 

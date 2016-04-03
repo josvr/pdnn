@@ -13,7 +13,7 @@
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
 
-import cPickle
+import pickle
 import gzip
 import os
 import sys
@@ -40,8 +40,8 @@ if __name__ == '__main__':
     arguments = parse_arguments(arg_elements)
     required_arguments = ['train_data', 'nnet_spec', 'wdir']
     for arg in required_arguments:
-        if arguments.has_key(arg) == False:
-            print "Error: the argument %s has to be specified" % (arg); exit(1)
+        if (arg in arguments) == False:
+            print("Error: the argument %s has to be specified" % (arg)); exit(1)
 
     train_data_spec = arguments['train_data']
     nnet_spec = arguments['nnet_spec']
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     log('> ... training the model')
     log('> r_cost = reconstruction cost, fe_cost = (approximate) value of free energy function') 
     # pre-train layer-wise
-    for i in xrange(start_layer_index, cfg.ptr_layer_number):
+    for i in range(start_layer_index, cfg.ptr_layer_number):
         if (srbm.rbm_layers[i].is_gbrbm()):
             pretrain_lr = cfg.gbrbm_learning_rate
         else:
@@ -96,7 +96,7 @@ if __name__ == '__main__':
             r_c, fe_c = [], []  # keep record of reconstruction and free-energy cost
             while (not cfg.train_sets.is_finish()):
                 cfg.train_sets.load_next_partition(cfg.train_xy)
-                for batch_index in xrange(cfg.train_sets.cur_frame_num / cfg.batch_size):  # loop over mini-batches
+                for batch_index in range(cfg.train_sets.cur_frame_num / cfg.batch_size):  # loop over mini-batches
                     [reconstruction_cost, free_energy_cost] = pretraining_fns[i](index=batch_index, lr=pretrain_lr,
                                                                                  momentum=momentum)
                     r_c.append(reconstruction_cost)

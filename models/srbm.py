@@ -41,7 +41,7 @@ class SRBM(object):
         # share the input of the corresponding dnn
         self.x = dnn.x
 
-        for i in xrange(self.hidden_layers_number):
+        for i in range(self.hidden_layers_number):
             # the size of the input is either the number of hidden units of
             # the layer below, or the input size if we are on the first layer
             if i == 0:

@@ -13,7 +13,7 @@
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
 
-import cPickle
+import pickle
 import gzip
 import os
 import sys
@@ -72,7 +72,7 @@ class CNN(object):
         self.conv_layer_num = len(conv_layer_configs)
         self.full_layer_num = len(hidden_layers_sizes)
 
-        for i in xrange(self.conv_layer_num):
+        for i in range(self.conv_layer_num):
             if i == 0:
                 input = self.x
                 is_input_layer = True
@@ -89,7 +89,7 @@ class CNN(object):
 
         self.conv_output_dim = config['output_shape'][1] * config['output_shape'][2] * config['output_shape'][3]
 
-        for i in xrange(self.full_layer_num):
+        for i in range(self.full_layer_num):
             # construct the sigmoidal layer
             if i == 0:
                 input_size = self.conv_output_dim
@@ -178,7 +178,7 @@ class CNN_Forward(object):
         self.x = T.tensor4('x')
 
         self.conv_layer_num = len(conv_layer_configs)
-        for i in xrange(self.conv_layer_num):
+        for i in range(self.conv_layer_num):
             if i == 0:
                 input = self.x
             else:

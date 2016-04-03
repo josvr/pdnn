@@ -23,9 +23,9 @@ import numpy
 import theano
 import theano.tensor as T
 from utils.utils import string2bool, parse_ignore_label, parse_map_label
-from pfile_io import PfileDataRead, PfileDataReadStream
-from pickle_io import PickleDataRead
-from kaldi_io import KaldiDataRead
+from .pfile_io import PfileDataRead, PfileDataReadStream
+from .pickle_io import PickleDataRead
+from .kaldi_io import KaldiDataRead
 
 def read_data_args(data_spec):
     elements = data_spec.split(",")

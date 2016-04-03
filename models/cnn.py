@@ -13,7 +13,7 @@
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
 
-import cPickle
+import pickle
 import gzip
 import os
 import sys
@@ -32,7 +32,7 @@ from layers.logistic_sgd import LogisticRegression
 from layers.mlp import HiddenLayer
 
 from layers.conv import ConvLayer, ConvLayerForward
-from dnn import DNN
+from .dnn import DNN
 
 from io_func import smart_open
 
@@ -73,18 +73,18 @@ class CNN(object):
         self.y = T.ivector('y')
 
         self.conv_layer_num = len(self.conv_layer_configs)
-        for i in xrange(self.conv_layer_num):
+        for i in range(self.conv_layer_num):
             if i == 0:
                 input = self.x
             else:
                 input = self.layers[-1].output
             config = self.conv_layer_configs[i]
             conv_layer = ConvLayer(numpy_rng=numpy_rng, input=input,
-			input_shape = config['input_shape'], filter_shape = config['filter_shape'], poolsize = config['poolsize'],
-			activation = self.conv_activation, flatten = config['flatten'], use_fast = self.use_fast, testing = testing)
-	    self.layers.append(conv_layer)
+                        input_shape = config['input_shape'], filter_shape = config['filter_shape'], poolsize = config['poolsize'],
+                        activation = self.conv_activation, flatten = config['flatten'], use_fast = self.use_fast, testing = testing)
+            self.layers.append(conv_layer)
             self.conv_layers.append(conv_layer)
-	    self.params.extend(conv_layer.params)
+            self.params.extend(conv_layer.params)
             self.delta_params.extend(conv_layer.delta_params)
 
         self.conv_output_dim = config['output_shape'][1] * config['output_shape'][2] * config['output_shape'][3]
@@ -104,7 +104,7 @@ class CNN(object):
 
     # output conv config to files
     def write_conv_config(self, file_path_prefix):
-        for i in xrange(len(self.conv_layer_configs)):
+        for i in range(len(self.conv_layer_configs)):
             self.conv_layer_configs[i]['activation'] = self.cfg.conv_activation_text
             with smart_open(file_path_prefix + '.' + str(i), 'wb') as fp:
                 json.dump(self.conv_layer_configs[i], fp, indent=2, sort_keys = True)
@@ -136,16 +136,16 @@ class CNN(object):
               givens={
                 self.x: train_set_x[index * batch_size:
                                     (index + 1) * batch_size],
-		self.y: train_set_y[index * batch_size:
-			            (index + 1) * batch_size]})
+                self.y: train_set_y[index * batch_size:
+                                    (index + 1) * batch_size]})
 
         valid_fn = theano.function(inputs=[index],
               outputs=self.errors,
               givens={
                 self.x: valid_set_x[index * batch_size:
                                     (index + 1) * batch_size],
-		self.y: valid_set_y[index * batch_size:
-			            (index + 1) * batch_size]})
+                self.y: valid_set_y[index * batch_size:
+                                    (index + 1) * batch_size]})
 
         return train_fn, valid_fn
 
@@ -166,7 +166,7 @@ class CNN_Forward(object):
         self.x = T.tensor4('x')
 
         self.conv_layer_num = len(conv_layer_configs)
-        for i in xrange(self.conv_layer_num):
+        for i in range(self.conv_layer_num):
             if i == 0:
                 input = self.x
             else:

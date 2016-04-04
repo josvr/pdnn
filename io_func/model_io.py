@@ -139,7 +139,6 @@ def _file2nnet(layers, set_layer_num = -1, path="dnn.tmp",  factor=1.0):
             layer.W.set_value(W_array)
         dict_a = 'b' + str(i)
         layer.b.set_value(np.asarray(bp.unpack_ndarray_file(nnet_dict[dict_a]), dtype=theano.config.floatX))
-    shutil.rmtree(path)
 	
 def _cnn2file(conv_layers, filename='nnet.out', input_factor = 1.0, factor=[]):
     n_layers = len(conv_layers)

@@ -158,7 +158,7 @@ class NetworkConfig():
         self.n_ins = int(nnet_layers[0])
         self.hidden_layers_sizes = [int(nnet_layers[i]) for i in range(1, len(nnet_layers)-1)]
         self.n_outs = int(nnet_layers[-1])
-        log("DNN Config parsed. Start Dump")
+        log(">> DNN Config parsed. Start Dump")
         log("batch_size="+str(self.batch_size))
         log("momentum="+str(self.momentum ))
         log("lrate="+str(self.lrate ))
@@ -181,7 +181,7 @@ class NetworkConfig():
         log("cfg_output_file="+str(self.cfg_output_file)) 
         log("param_output_file="+str(self.param_output_file)) 
         log("kaldi_output_file="+str(self.kaldi_output_file))
-        log("DNN Config parsed. End Dump")
+        log("<< DNN Config parsed. End Dump")
 
     def parse_config_cnn(self, arguments, nnet_spec, conv_nnet_spec):
         self.parse_config_dnn(arguments, nnet_spec)
@@ -196,7 +196,7 @@ class NetworkConfig():
         # whether we use the fast version of convolution
         if 'use_fast' in arguments:
             self.use_fast = string2bool(arguments['use_fast'])
-        log("CNN Config parsed. Start Dump")
+        log(">> CNN Config parsed. Start Dump")
         log("batch_size="+str(self.batch_size))
         log("momentum="+str(self.momentum ))
         log("lrate="+str(self.lrate ))
@@ -225,4 +225,4 @@ class NetworkConfig():
         log("cfg_output_file="+str(self.cfg_output_file)) 
         log("param_output_file="+str(self.param_output_file)) 
         log("kaldi_output_file="+str(self.kaldi_output_file))
-        log("CNN Config parsed. End Dump")
+        log("<< CNN Config parsed. End Dump")

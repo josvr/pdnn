@@ -68,7 +68,7 @@ if __name__ == '__main__':
         model = CNN(numpy_rng=numpy_rng, theano_rng = theano_rng, cfg = cfg, testing = True)
 
     # load model parameters
-    _file2nnet(model.layers, filename = nnet_param)
+    _file2nnet(model.layers, path = nnet_param)
 
     # initialize data reading
     cfg.init_data_reading_test(data_spec)

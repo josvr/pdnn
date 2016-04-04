@@ -22,6 +22,7 @@
 #
 # 2016 change: net2file and file2net is now using high performance bloscpac over (slow) json
 
+import shutil
 import numpy as np
 import os
 import uuid
@@ -61,9 +62,11 @@ def string_2_array(string):
         return np.array([array_tmp])
     return array_tmp
 
-def _nnet2file(layers, set_layer_num = -1, path, start_layer = 0, input_factor = 0.0, factor=[]):
-	shutil.rmtree(path)
-	blosc_args=bp.BloscArgs(clevel=9) 
+def _nnet2file(layers, set_layer_num = -1, path="dnn.tmp", start_layer = 0, input_factor = 0.0, factor=[]):
+    if os.path.exists(path):
+       shutil.rmtree(path)
+    os.makedirs(path)
+    blosc_args=bp.BloscArgs(clevel=9) 
     n_layers = len(layers)
     nnet_dict = {}
     if set_layer_num == -1:
@@ -78,26 +81,25 @@ def _nnet2file(layers, set_layer_num = -1, path, start_layer = 0, input_factor =
            dropout_factor = factor[i-1]
 
        if layer.type == 'fc':
-	       tmpFileName = path + "/" + str(uuid.uuid4())+".blp";
+           tmpFileName = path + "/" + str(uuid.uuid4())+".blp";
            nnet_dict[dict_a] = tmpFileName
-		   bp.pack_ndarray_file((1.0 - dropout_factor) * layer.W.get_value(), tmpFileName, chunk_size='100M', blosc_args=blosc_args)
+           bp.pack_ndarray_file((1.0 - dropout_factor) * layer.W.get_value(), tmpFileName, chunk_size='100M', blosc_args=blosc_args)
        elif layer.type == 'conv':
            filter_shape = layer.filter_shape
            for next_X in range(filter_shape[0]):
                for this_X in range(filter_shape[1]):
-				   tmpFileName = path + "/" + str(uuid.uuid4())+".blp";
+                   tmpFileName = path + "/" + str(uuid.uuid4())+".blp";
                    new_dict_a = dict_a + ' ' + str(next_X) + ' ' + str(this_X)
-				   nnet_dict[new_dict_a] = tmpFileName
-				   bp.pack_ndarray_file((1.0-dropout_factor) * (layer.W.get_value())[next_X, this_X], tmpFileName, chunk_size='100M', blosc_args=blosc_args)
+                   nnet_dict[new_dict_a] = tmpFileName
+                   bp.pack_ndarray_file((1.0-dropout_factor) * (layer.W.get_value())[next_X, this_X], tmpFileName, chunk_size='100M', blosc_args=blosc_args)
 
-	   tmpFileName = path + "/" + str(uuid.uuid4())+".blp";
+       tmpFileName = path + "/" + str(uuid.uuid4())+".blp";
        dict_a = 'b' + str(i)
        nnet_dict[dict_a] = tmpFileName
-	   bp.pack_ndarray_file(layer.b.get_value(),tmpFileName, chunk_size='100M', blosc_args=blosc_args)
+       bp.pack_ndarray_file(layer.b.get_value(),tmpFileName, chunk_size='100M', blosc_args=blosc_args)
 
-    with smart_open(wdir + '/metadata.tmp', 'w') as fp:
-        pickle.dump(nnet_dict)
-        fp.flush()
+    with open(path + '/metadata.tmp', 'wb') as fp:
+        pickle.dump(nnet_dict,fp,pickle.HIGHEST_PROTOCOL)
 
 
 # save the config classes; since we are using pickle to serialize the whole class, it's better to set the
@@ -109,16 +111,16 @@ def _cfg2file(cfg, filename='cfg.out'):
     cfg.activation = None  # saving the rectifier function causes errors; thus we don't save the activation function
                            # the activation function is initialized from the activation text ("sigmoid") when the network
                            # configuration is loaded
-    with smart_open(filename, "wb") as output:
+    with open(filename, "wb") as output:
         pickle.dump(cfg, output, pickle.HIGHEST_PROTOCOL)
 
-def _file2nnet(layers, set_layer_num = -1, path,  factor=1.0):
+def _file2nnet(layers, set_layer_num = -1, path="dnn.tmp",  factor=1.0):
     n_layers = len(layers)
     nnet_dict = {}
     if set_layer_num == -1:
         set_layer_num = n_layers
 
-    with smart_open(wdir + '/metadata.tmp', 'r') as fp:
+    with open(path + '/metadata.tmp', 'rb') as fp:
         nnet_dict = pickle.load(fp)
     for i in range(set_layer_num):
         dict_a = 'W' + str(i)
@@ -137,7 +139,7 @@ def _file2nnet(layers, set_layer_num = -1, path,  factor=1.0):
             layer.W.set_value(W_array)
         dict_a = 'b' + str(i)
         layer.b.set_value(np.asarray(bp.unpack_ndarray_file(nnet_dict[dict_a]), dtype=theano.config.floatX))
-	shutil.rmtree(path)
+    shutil.rmtree(path)
 	
 def _cnn2file(conv_layers, filename='nnet.out', input_factor = 1.0, factor=[]):
     n_layers = len(conv_layers)

@@ -77,9 +77,9 @@ if __name__ == '__main__':
     cnn = CNN(numpy_rng=numpy_rng, theano_rng = theano_rng, cfg = cfg)
     # load the pre-training networks, if any, for parameter initialization
     if (ptr_layer_number > 0) and (resume_training is False):
-        _file2nnet(cnn.layers, set_layer_num = ptr_layer_number, filename = ptr_file)
+        _file2nnet(cnn.layers, set_layer_num = ptr_layer_number, path = ptr_file)
     if resume_training:
-        _file2nnet(cnn.layers, filename = wdir + '/nnet.tmp')
+        _file2nnet(cnn.layers, path = wdir + '/nnet.tmp')
 
     # get the training, validation and testing function for the model
     log('> ... getting the finetuning functions')
@@ -99,12 +99,12 @@ if __name__ == '__main__':
 
         # output nnet parameters and lrate, for training resume
         if cfg.lrate.epoch % cfg.model_save_step == 0:
-            _nnet2file(cnn.layers, filename=wdir + '/nnet.tmp')
+            _nnet2file(cnn.layers, path=wdir + '/nnet.tmp')
             _lrate2file(cfg.lrate, wdir + '/training_state.tmp')
 
     # save the model and network configuration
     if cfg.param_output_file != '':
-        _nnet2file(cnn.layers, filename=cfg.param_output_file, input_factor = cfg.input_dropout_factor, factor = cfg.dropout_factor)
+        _nnet2file(cnn.layers, path=cfg.param_output_file, input_factor = cfg.input_dropout_factor, factor = cfg.dropout_factor)
         log('> ... the final PDNN model parameter is ' + cfg.param_output_file)
     if cfg.cfg_output_file != '':
         _cfg2file(cnn.cfg, filename=cfg.cfg_output_file)

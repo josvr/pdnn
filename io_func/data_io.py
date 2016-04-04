@@ -31,7 +31,7 @@ from .bloscpack_io import BloscPackDataRead
 
 def read_data_args(data_spec):
     elements = data_spec.split(",")
-    pfile_path_list = glob.glob(elements[0])
+    pfile_path_list = sorted(glob.glob(elements[0]))
     dataset_args = {}
     # default settings
     dataset_args['type'] = 'pickle'
@@ -44,7 +44,7 @@ def read_data_args(data_spec):
     # the type of the data: pickle, pfile   TO-DO: HDF5
     if '.pickle' in data_spec or '.pkl' in data_spec:
         dataset_args['type'] = 'pickle'
-    elif '.blk' in data_spec:
+    elif '.blp' in data_spec:
         dataset_args['type'] = 'blocspack'
     elif '.pfile' in data_spec:
         dataset_args['type'] = 'pfile'
@@ -93,9 +93,9 @@ def read_dataset(file_path_list, read_opts):
     elif read_opts['type'] == 'kaldi':
         data_reader = KaldiDataRead(file_path_list, read_opts)
     elif read_opts['type'] == 'blocspack':
-        data_reader = BlocspackDataRead(file_path_list, read_opts)
-	else
-		raise ValueError("Unknow filetype '"+str(read_opts['type'])+"'")
+        data_reader = BloscPackDataRead(file_path_list, read_opts)
+    else:
+        raise ValueError("Unknow filetype '"+str(read_opts['type'])+"'")
 
     data_reader.initialize_read(first_time_reading = True)
 

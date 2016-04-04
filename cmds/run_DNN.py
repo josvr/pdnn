@@ -85,9 +85,9 @@ if __name__ == '__main__':
     # if not resuming training, initialized from the specified pre-training file
     # if resuming training, initialized from the tmp model file
     if (ptr_layer_number > 0) and (resume_training is False):
-        _file2nnet(dnn.layers, set_layer_num = ptr_layer_number, filename = ptr_file)
+        _file2nnet(dnn.layers, set_layer_num = ptr_layer_number, path = ptr_file)
     if resume_training:
-        _file2nnet(dnn.layers, filename = wdir + '/dnn.tmp')
+        _file2nnet(dnn.layers, path = wdir + '/dnn.tmp')
 
     # get the training, validation and testing function for the model
     log('> ... getting the finetuning functions')
@@ -106,12 +106,12 @@ if __name__ == '__main__':
         cfg.lrate.get_next_rate(current_error = 100*numpy.mean(valid_error))
         # output nnet parameters and lrate, for training resume
         if cfg.lrate.epoch % cfg.model_save_step == 0:
-            _nnet2file(dnn.layers, filename=wdir + '/dnn.tmp')
+            _nnet2file(dnn.layers, path=wdir + '/dnn.tmp')
             _lrate2file(cfg.lrate, wdir + '/dnn_training_state.tmp') 
 
     # save the model and network configuration
     if cfg.param_output_file != '':
-        _nnet2file(dnn.layers, filename=cfg.param_output_file, input_factor = cfg.input_dropout_factor, factor = cfg.dropout_factor)
+        _nnet2file(dnn.layers, path=cfg.param_output_file, input_factor = cfg.input_dropout_factor, factor = cfg.dropout_factor)
         log('> ... the final PDNN model parameter is ' + cfg.param_output_file)
     if cfg.cfg_output_file != '':
         _cfg2file(dnn.cfg, filename=cfg.cfg_output_file)

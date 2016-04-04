@@ -1,13 +1,10 @@
-PDNN
+PDNN Fork
 ====
 
-PDNN is a lightweight, easy-to-use deep learning toolkit developed under the [Theano](http://deeplearning.net/software/theano) environment. Check the [project webpage](http://www.cs.cmu.edu/~ymiao/pdnntk.html) for all documentation.
+This is a fork of PDNN. Check the [project webpage](http://www.cs.cmu.edu/~ymiao/pdnntk.html) for all documentation.
 
-cmds     -- commands to conduct general-purpose deep learning  
-cmds2    -- additional commands specifically for ASR  
-examples -- example setups  
-io_func  -- data reading functions; model IO functions; model format conversion  
-layers   -- layers: convolution, fully-connected, denoising autoencoder, logistic regression, etc  
-learning -- learning algorithms  
-models   -- models: CNNs, DNNs, SDAs, SRBMs, etc  
-utils    -- utility functions: learning rates, argument parsing, etc  
+This fork adds:
+
+- Migrated from Python 2 to Python 3
+- Migrated to Theano 0.8
+- Added support for BloscPack dumped numpy arrays. BloscPack is typical 200 times faster and 3 times smaller than Pickle/Gzip based on 1 GB (250M float32) numpy array. BloscPack files are supposed to have *.blp and the associated label vector file *.blp.labels. See examples for an updated example for converting MNIST to Bloscpack, and DNN/CNN using it.  

@@ -15,6 +15,7 @@
 
 import theano
 import theano.tensor as T
+import io_func.model_io import log
 from io_func.data_io import read_data_args, read_dataset
 from .learn_rates import LearningRateExpDecay
 from .utils import parse_lrate, parse_activation, parse_conv_spec, activation_to_txt, string2bool
@@ -123,3 +124,24 @@ class SdAConfig():
             self.param_output_file = arguments['param_output_file']
         if 'kaldi_output_file' in arguments:
             self.kaldi_output_file = arguments['kaldi_output_file']
+
+        log("SDA Config parsed. Start Dump")
+		log("epochs="+str(self.epochs))
+        log("batch_size="+str(self.batch_size))
+        log("corruption_levels="+str(self.corruption_levels))
+        log("learning_rates="+str(self.learning_rates))
+        log("momentum="+str(self.momentum))
+        log("ptr_layer_number="+str(self.ptr_layer_number))
+        log("hidden_activation ="+str(self.hidden_activation ))
+        log("firstlayer_reconstruct_activation="+str(self.firstlayer_reconstruct_activation))
+        log("do_maxout="+str(self.do_maxout))
+        log("="+str(self.pool_size))  
+        log("="+str(self.n_ins))            
+        log("="+str(self.hidden_layers_sizes))
+        log("="+str(self.n_outs))             
+        log("="+str(self.sparsity))
+        log("="+str(self.sparsity_weight))
+        log("="+str(self.cfg_output_file))  
+        log("="+str(self.param_output_file))  
+        log("="+str(self.kaldi_output_file))   
+		log("End SDA Config Dump")

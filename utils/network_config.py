@@ -15,6 +15,7 @@
 # limitations under the License.
 
 import theano
+import io_func.model_io import log
 import theano.tensor as T
 from io_func.data_io import read_data_args, read_dataset
 from .learn_rates import LearningRateExpDecay
@@ -157,6 +158,36 @@ class NetworkConfig():
         self.n_ins = int(nnet_layers[0])
         self.hidden_layers_sizes = [int(nnet_layers[i]) for i in range(1, len(nnet_layers)-1)]
         self.n_outs = int(nnet_layers[-1])
+		log("DNN Config parsed. Start Dump")
+        log(""+str(self.batch_size))
+        log(""+str(self.momentum ))
+        log(""+str(self.lrate ))
+        log(""+str(self.activation))
+        log(""+str(self.activation_text))
+        log(""+str(self.do_maxout))
+        log(""+str(self.pool_size))
+        log(""+str(self.do_dropout))
+        log(""+str(self.dropout_factor))
+        log(""+str(self.input_dropout_factor))
+        log(""+str(self.max_col_norm))
+        log(""+str(self.l1_reg))
+        log(""+str(self.l2_reg))
+        log(""+str(self.n_ins))
+        log(""+str(self.hidden_layers_sizes))
+        log(""+str(self.n_outs))
+        log(""+str(self.non_updated_layers))
+        log(""+str(self.ivec_n_ins))
+        log(""+str(self.ivec_hidden_layers_sizes))
+        log(""+str(self.ivec_n_outs))
+        log(""+str(self.conv_layer_configs))
+        log(""+str(self.conv_activation))
+        log(""+str(self.conv_activation_text))
+        log(""+str(self.use_fast))
+        log(""+str(self.model_save_step))
+        log(""+str(self.cfg_output_file)) 
+        log(""+str(self.param_output_file)) 
+        log(""+str(self.kaldi_output_file))
+		log("DNN Config parsed. End Dump")
 
     def parse_config_cnn(self, arguments, nnet_spec, conv_nnet_spec):
         self.parse_config_dnn(arguments, nnet_spec)
@@ -171,4 +202,33 @@ class NetworkConfig():
         # whether we use the fast version of convolution
         if 'use_fast' in arguments:
             self.use_fast = string2bool(arguments['use_fast'])
-
+		log("CNN Config parsed. Start Dump")
+        log(""+str(self.batch_size))
+        log(""+str(self.momentum ))
+        log(""+str(self.lrate ))
+        log(""+str(self.activation))
+        log(""+str(self.activation_text))
+        log(""+str(self.do_maxout))
+        log(""+str(self.pool_size))
+        log(""+str(self.do_dropout))
+        log(""+str(self.dropout_factor))
+        log(""+str(self.input_dropout_factor))
+        log(""+str(self.max_col_norm))
+        log(""+str(self.l1_reg))
+        log(""+str(self.l2_reg))
+        log(""+str(self.n_ins))
+        log(""+str(self.hidden_layers_sizes))
+        log(""+str(self.n_outs))
+        log(""+str(self.non_updated_layers))
+        log(""+str(self.ivec_n_ins))
+        log(""+str(self.ivec_hidden_layers_sizes))
+        log(""+str(self.ivec_n_outs))
+        log(""+str(self.conv_layer_configs))
+        log(""+str(self.conv_activation))
+        log(""+str(self.conv_activation_text))
+        log(""+str(self.use_fast))
+        log(""+str(self.model_save_step))
+        log(""+str(self.cfg_output_file)) 
+        log(""+str(self.param_output_file)) 
+        log(""+str(self.kaldi_output_file))
+		log("CNN Config parsed. End Dump")

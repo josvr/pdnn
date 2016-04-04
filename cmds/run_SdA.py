@@ -1,4 +1,5 @@
-# Copyright 2014    Yajie Miao    Carnegie Mellon University
+# Copyright 2014    Yajie Miao         Carnegie Mellon University
+# Copyright 2016    Jos van Roosmalen  Open University The Netherlands
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +19,7 @@ import gzip
 import os
 import sys
 import time
-
+import shutil
 import numpy
 
 import theano
@@ -72,10 +73,10 @@ if __name__ == '__main__':
 
     # resume training
     start_layer_index = 0; start_epoch_index = 0
-    if os.path.exists(wdir + '/nnet.tmp') and os.path.exists(wdir + '/training_state.tmp'):
-        start_layer_index, start_epoch_index = read_two_integers(wdir + '/training_state.tmp')
+    if os.path.exists(wdir + '/sda.tmp') and os.path.exists(wdir + '/sda_training_state.tmp'):
+        start_layer_index, start_epoch_index = read_two_integers(wdir + '/sda_training_state.tmp')
         log('> ... found nnet.tmp and training_state.tmp, now resume training from layer #' + str(start_layer_index) + ' epoch #' + str(start_epoch_index))
-        _file2nnet(dnn.layers, filename = wdir + '/nnet.tmp')
+        _file2nnet(dnn.layers, filename = wdir + '/sda.tmp')
 
     log('> ... training the model')
     # layer by layer; for each layer, go through the epochs
@@ -93,11 +94,11 @@ if __name__ == '__main__':
             cfg.train_sets.initialize_read()
             log('> layer %i, epoch %d, reconstruction cost %f' % (i, epoch, numpy.mean(c)))
             # output nnet parameters and training state, for training resume
-            _nnet2file(dnn.layers, filename=wdir + '/nnet.tmp')
-            save_two_integers((i, epoch+1), wdir + '/training_state.tmp')
+            _nnet2file(dnn.layers, filename=wdir + '/sda.tmp')
+            save_two_integers((i, epoch+1), wdir + '/sda_training_state.tmp')
         # output nnet parameters and training state, for training resume
         start_epoch_index = 0
-        save_two_integers((i+1, 0), wdir + '/training_state.tmp')
+        save_two_integers((i+1, 0), wdir + '/sda_training_state.tmp')
 
     # save the pretrained nnet to file
     # save the model and network configuration
@@ -115,5 +116,7 @@ if __name__ == '__main__':
         log('> ... the final Kaldi model is ' + cfg.kaldi_output_file)
     
     # finally remove the training-resuming files
-    os.remove(wdir + '/nnet.tmp')
-    os.remove(wdir + '/training_state.tmp')
+	if os.path.exists(wdir + '/sda.tmp'):
+		shutil.rmtree(wdir + '/sda.tmp')
+	if os.path.exists(wdir + '/sda_training_state.tmp'):
+		os.remove(wdir + '/sda_training_state.tmp')

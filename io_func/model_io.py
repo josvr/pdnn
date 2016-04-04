@@ -1,5 +1,6 @@
-# Copyright 2013    Yajie Miao    Carnegie Mellon University
-#           2015    Yun Wang      Carnegie Mellon University
+# Copyright 2013    Yajie Miao        Carnegie Mellon University
+#           2015    Yun Wang          Carnegie Mellon University
+#           2016    Jos van Roosmalen Open University The Netherlands
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,9 +17,15 @@
 
 # Various functions to write models from nets to files, and to read models from
 # files to nets
+#
+#
+#
+# 2016 change: net2file and file2net is now using high performance bloscpac over (slow) json
 
 import numpy as np
 import os
+import uuid
+import bloscpack as bp
 import sys
 import pickle
 
@@ -54,12 +61,13 @@ def string_2_array(string):
         return np.array([array_tmp])
     return array_tmp
 
-def _nnet2file(layers, set_layer_num = -1, filename='nnet.out', start_layer = 0, input_factor = 0.0, factor=[]):
+def _nnet2file(layers, set_layer_num = -1, path, start_layer = 0, input_factor = 0.0, factor=[]):
+	shutil.rmtree(path)
+	blosc_args=bp.BloscArgs(clevel=9) 
     n_layers = len(layers)
     nnet_dict = {}
     if set_layer_num == -1:
        set_layer_num = n_layers
-
     for i in range(start_layer, set_layer_num):
        layer = layers[i]
        dict_a = 'W' + str(i)
@@ -70,19 +78,25 @@ def _nnet2file(layers, set_layer_num = -1, filename='nnet.out', start_layer = 0,
            dropout_factor = factor[i-1]
 
        if layer.type == 'fc':
-           nnet_dict[dict_a] = array_2_string((1.0 - dropout_factor) * layer.W.get_value())
+	       tmpFileName = path + "/" + str(uuid.uuid4())+".blp";
+           nnet_dict[dict_a] = tmpFileName
+		   bp.pack_ndarray_file((1.0 - dropout_factor) * layer.W.get_value(), tmpFileName, chunk_size='100M', blosc_args=blosc_args)
        elif layer.type == 'conv':
            filter_shape = layer.filter_shape
            for next_X in range(filter_shape[0]):
                for this_X in range(filter_shape[1]):
+				   tmpFileName = path + "/" + str(uuid.uuid4())+".blp";
                    new_dict_a = dict_a + ' ' + str(next_X) + ' ' + str(this_X)
-                   nnet_dict[new_dict_a] = array_2_string((1.0-dropout_factor) * (layer.W.get_value())[next_X, this_X])
+				   nnet_dict[new_dict_a] = tmpFileName
+				   bp.pack_ndarray_file((1.0-dropout_factor) * (layer.W.get_value())[next_X, this_X], tmpFileName, chunk_size='100M', blosc_args=blosc_args)
 
+	   tmpFileName = path + "/" + str(uuid.uuid4())+".blp";
        dict_a = 'b' + str(i)
-       nnet_dict[dict_a] = array_2_string(layer.b.get_value())
+       nnet_dict[dict_a] = tmpFileName
+	   bp.pack_ndarray_file(layer.b.get_value(),tmpFileName, chunk_size='100M', blosc_args=blosc_args)
 
-    with smart_open(filename, 'w') as fp:
-        json.dump(nnet_dict, fp, indent=2, sort_keys = True)
+    with smart_open(wdir + '/metadata.tmp', 'w') as fp:
+        pickle.dump(nnet_dict)
         fp.flush()
 
 
@@ -98,20 +112,20 @@ def _cfg2file(cfg, filename='cfg.out'):
     with smart_open(filename, "wb") as output:
         pickle.dump(cfg, output, pickle.HIGHEST_PROTOCOL)
 
-def _file2nnet(layers, set_layer_num = -1, filename='nnet.in',  factor=1.0):
+def _file2nnet(layers, set_layer_num = -1, path,  factor=1.0):
     n_layers = len(layers)
     nnet_dict = {}
     if set_layer_num == -1:
         set_layer_num = n_layers
 
-    with smart_open(filename, 'r') as fp:
-        nnet_dict = json.load(fp)
+    with smart_open(wdir + '/metadata.tmp', 'r') as fp:
+        nnet_dict = pickle.load(fp)
     for i in range(set_layer_num):
         dict_a = 'W' + str(i)
         layer = layers[i]
         if layer.type == 'fc':
             mat_shape = layer.W.get_value().shape
-            layer.W.set_value(factor * np.asarray(string_2_array(nnet_dict[dict_a]), dtype=theano.config.floatX).reshape(mat_shape))
+            layer.W.set_value(factor * np.asarray(bp.unpack_ndarray_file(nnet_dict[dict_a]), dtype=theano.config.floatX).reshape(mat_shape))
         elif layer.type == 'conv':
             filter_shape = layer.filter_shape
             W_array = layer.W.get_value()
@@ -119,11 +133,12 @@ def _file2nnet(layers, set_layer_num = -1, filename='nnet.in',  factor=1.0):
                 for this_X in range(filter_shape[1]):
                     new_dict_a = dict_a + ' ' + str(next_X) + ' ' + str(this_X)
                     mat_shape = W_array[next_X, this_X, :, :].shape
-                    W_array[next_X, this_X, :, :] = factor * np.asarray(string_2_array(nnet_dict[new_dict_a]), dtype=theano.config.floatX).reshape(mat_shape)
+                    W_array[next_X, this_X, :, :] = factor * np.asarray(bp.unpack_ndarray_file(nnet_dict[new_dict_a]), dtype=theano.config.floatX).reshape(mat_shape)
             layer.W.set_value(W_array)
         dict_a = 'b' + str(i)
-        layer.b.set_value(np.asarray(string_2_array(nnet_dict[dict_a]), dtype=theano.config.floatX))
-
+        layer.b.set_value(np.asarray(bp.unpack_ndarray_file(nnet_dict[dict_a]), dtype=theano.config.floatX))
+	shutil.rmtree(path)
+	
 def _cnn2file(conv_layers, filename='nnet.out', input_factor = 1.0, factor=[]):
     n_layers = len(conv_layers)
     nnet_dict = {}

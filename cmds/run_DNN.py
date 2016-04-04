@@ -1,7 +1,8 @@
-# Copyright 2014    Yajie Miao    Carnegie Mellon University
+# Copyright 2014    Yajie Miao         Carnegie Mellon University
+# Copyright 2016    Jos van Roosmalen  Open University The Netherlands
 
 # Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
+# you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #  http://www.apache.org/licenses/LICENSE-2.0
@@ -19,6 +20,7 @@ import os
 import os.path
 import sys
 import time
+import shutil
 
 import numpy
 import theano
@@ -65,9 +67,9 @@ if __name__ == '__main__':
 
     # check working dir to see whether it's resuming training
     resume_training = False
-    if os.path.exists(wdir + '/nnet.tmp') and os.path.exists(wdir + '/training_state.tmp'):
+    if os.path.exists(wdir + '/dnn.tmp') and os.path.exists(wdir + '/dnn_training_state.tmp'):
         resume_training = True
-        cfg.lrate = _file2lrate(wdir + '/training_state.tmp')
+        cfg.lrate = _file2lrate(wdir + '/dnn_training_state.tmp')
         log('> ... found nnet.tmp and training_state.tmp, now resume training from epoch ' + str(cfg.lrate.epoch))
 
     numpy_rng = numpy.random.RandomState(89677)
@@ -85,7 +87,7 @@ if __name__ == '__main__':
     if (ptr_layer_number > 0) and (resume_training is False):
         _file2nnet(dnn.layers, set_layer_num = ptr_layer_number, filename = ptr_file)
     if resume_training:
-        _file2nnet(dnn.layers, filename = wdir + '/nnet.tmp')
+        _file2nnet(dnn.layers, filename = wdir + '/dnn.tmp')
 
     # get the training, validation and testing function for the model
     log('> ... getting the finetuning functions')
@@ -104,8 +106,8 @@ if __name__ == '__main__':
         cfg.lrate.get_next_rate(current_error = 100*numpy.mean(valid_error))
         # output nnet parameters and lrate, for training resume
         if cfg.lrate.epoch % cfg.model_save_step == 0:
-            _nnet2file(dnn.layers, filename=wdir + '/nnet.tmp')
-            _lrate2file(cfg.lrate, wdir + '/training_state.tmp') 
+            _nnet2file(dnn.layers, filename=wdir + '/dnn.tmp')
+            _lrate2file(cfg.lrate, wdir + '/dnn_training_state.tmp') 
 
     # save the model and network configuration
     if cfg.param_output_file != '':
@@ -121,7 +123,7 @@ if __name__ == '__main__':
         log('> ... the final Kaldi model is ' + cfg.kaldi_output_file) 
 
     # remove the tmp files (which have been generated from resuming training) 
-    if os.path.exists(wdir + '/nnet.tmp'):
-        os.remove(wdir + '/nnet.tmp')
-    if os.path.exists(wdir + '/training_state.tmp'):
-        os.remove(wdir + '/training_state.tmp') 
+    if os.path.exists(wdir + '/dnn.tmp'):
+        shutil.rmtree(wdir + '/dnn.tmp')
+    if os.path.exists(wdir + '/dnn_training_state.tmp'):
+        os.remove(wdir + '/dnn_training_state.tmp') 

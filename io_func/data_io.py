@@ -1,5 +1,6 @@
-# Copyright 2013    Yajie Miao    Carnegie Mellon University
-#           2015    Yun Wang      Carnegie Mellon University
+# Copyright 2013    Yajie Miao        Carnegie Mellon University
+#           2015    Yun Wang          Carnegie Mellon University
+#           2016    Jos van Roosmalen Open University The Netherlands
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,6 +27,7 @@ from utils.utils import string2bool, parse_ignore_label, parse_map_label
 from .pfile_io import PfileDataRead, PfileDataReadStream
 from .pickle_io import PickleDataRead
 from .kaldi_io import KaldiDataRead
+from .bloscpack_io import BloscPackDataRead
 
 def read_data_args(data_spec):
     elements = data_spec.split(",")
@@ -42,6 +44,8 @@ def read_data_args(data_spec):
     # the type of the data: pickle, pfile   TO-DO: HDF5
     if '.pickle' in data_spec or '.pkl' in data_spec:
         dataset_args['type'] = 'pickle'
+    elif '.blk' in data_spec:
+        dataset_args['type'] = 'blocspack'
     elif '.pfile' in data_spec:
         dataset_args['type'] = 'pfile'
     elif '.scp' in data_spec:
@@ -88,6 +92,10 @@ def read_dataset(file_path_list, read_opts):
             data_reader = PfileDataRead(file_path_list, read_opts)
     elif read_opts['type'] == 'kaldi':
         data_reader = KaldiDataRead(file_path_list, read_opts)
+    elif read_opts['type'] == 'blocspack':
+        data_reader = BlocspackDataRead(file_path_list, read_opts)
+	else
+		raise ValueError("Unknow filetype '"+str(read_opts['type'])+"'")
 
     data_reader.initialize_read(first_time_reading = True)
 

@@ -18,8 +18,8 @@ python3 data_prep.py >> nn.log
 
 # train DNN model
 echo "Training the DNN model ..." >> nn.log
-python3 $pdnndir/cmds/run_DNN.py --train-data "train.pickle.gz" \
-                                --valid-data "valid.pickle.gz" \
+python3 $pdnndir/cmds/run_DNN.py --train-data "train.blp" \
+                                --valid-data "valid.blp" \
                                 --nnet-spec "784:1024:1024:10" --wdir ./ \
                                 --l2-reg 0.0001 --lrate "C:0.1:200" --model-save-step 20 \
                                 --param-output-file dnn.param --cfg-output-file dnn.cfg  >> nn.log

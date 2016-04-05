@@ -15,7 +15,7 @@
 
 import theano
 import theano.tensor as T
-import io_func.model_io import log
+from io_func.model_io import log
 from io_func.data_io import read_data_args, read_dataset
 from .learn_rates import LearningRateExpDecay
 from .utils import parse_lrate, parse_activation, parse_conv_spec, activation_to_txt, string2bool
@@ -126,7 +126,7 @@ class SdAConfig():
             self.kaldi_output_file = arguments['kaldi_output_file']
 
         log("SDA Config parsed. Start Dump")
-		log("epochs="+str(self.epochs))
+        log("epochs="+str(self.epochs))
         log("batch_size="+str(self.batch_size))
         log("corruption_levels="+str(self.corruption_levels))
         log("learning_rates="+str(self.learning_rates))
@@ -144,4 +144,5 @@ class SdAConfig():
         log("="+str(self.cfg_output_file))  
         log("="+str(self.param_output_file))  
         log("="+str(self.kaldi_output_file))   
-		log("End SDA Config Dump")
+        log("End SDA Config Dump")
+

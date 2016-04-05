@@ -43,6 +43,7 @@ from io_func import smart_open
 # print log to standard output
 def log(string):
     sys.stderr.write('[' + str(datetime.now()) + '] ' + str(string) + '\n')
+    sys.stderr.flush()
 
 # convert an array to a string
 def array_2_string(array):

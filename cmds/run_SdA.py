@@ -76,7 +76,7 @@ if __name__ == '__main__':
     if os.path.exists(wdir + '/sda.tmp') and os.path.exists(wdir + '/sda_training_state.tmp'):
         start_layer_index, start_epoch_index = read_two_integers(wdir + '/sda_training_state.tmp')
         log('> ... found nnet.tmp and training_state.tmp, now resume training from layer #' + str(start_layer_index) + ' epoch #' + str(start_epoch_index))
-        _file2nnet(dnn.layers, filename = wdir + '/sda.tmp')
+        _file2nnet(dnn.layers, path = wdir + '/sda.tmp')
 
     log('> ... training the model')
     # layer by layer; for each layer, go through the epochs
@@ -86,7 +86,7 @@ if __name__ == '__main__':
             c = []
             while (not cfg.train_sets.is_finish()):
                 cfg.train_sets.load_next_partition(cfg.train_xy)
-                for batch_index in range(cfg.train_sets.cur_frame_num / cfg.batch_size):  # loop over mini-batches
+                for batch_index in range(int(cfg.train_sets.cur_frame_num / cfg.batch_size)):  # loop over mini-batches
                     c.append(pretraining_fns[i](index = batch_index,
                                                 corruption = cfg.corruption_levels[i],
                                                 lr = cfg.learning_rates[i],
@@ -94,7 +94,7 @@ if __name__ == '__main__':
             cfg.train_sets.initialize_read()
             log('> layer %i, epoch %d, reconstruction cost %f' % (i, epoch, numpy.mean(c)))
             # output nnet parameters and training state, for training resume
-            _nnet2file(dnn.layers, filename=wdir + '/sda.tmp')
+            _nnet2file(dnn.layers, path=wdir + '/sda.tmp')
             save_two_integers((i, epoch+1), wdir + '/sda_training_state.tmp')
         # output nnet parameters and training state, for training resume
         start_epoch_index = 0
@@ -103,7 +103,7 @@ if __name__ == '__main__':
     # save the pretrained nnet to file
     # save the model and network configuration
     if cfg.param_output_file != '':
-        _nnet2file(dnn.layers, filename=cfg.param_output_file)
+        _nnet2file(dnn.layers, path=cfg.param_output_file)
         log('> ... the final PDNN model parameter is ' + cfg.param_output_file)
     if cfg.cfg_output_file != '':
 #        _cfg2file(sda.cfg, filename=cfg.cfg_output_file)
@@ -116,7 +116,7 @@ if __name__ == '__main__':
         log('> ... the final Kaldi model is ' + cfg.kaldi_output_file)
     
     # finally remove the training-resuming files
-	if os.path.exists(wdir + '/sda.tmp'):
-		shutil.rmtree(wdir + '/sda.tmp')
-	if os.path.exists(wdir + '/sda_training_state.tmp'):
-		os.remove(wdir + '/sda_training_state.tmp')
+        if os.path.exists(wdir + '/sda.tmp'):
+                shutil.rmtree(wdir + '/sda.tmp')
+        if os.path.exists(wdir + '/sda_training_state.tmp'):
+                os.remove(wdir + '/sda_training_state.tmp')

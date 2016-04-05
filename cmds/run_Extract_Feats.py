@@ -84,8 +84,8 @@ if __name__ == '__main__':
         batch_num = int(math.ceil(1.0 * cfg.test_sets.cur_frame_num / batch_size))
 
         for batch_index in range(batch_num):  # loop over mini-batches
-            start_index = batch_index * batch_size
-            end_index = min((batch_index+1) * batch_size, cfg.test_sets.cur_frame_num)  # the residue may be smaller than a mini-batch
+            start_index = int(batch_index * batch_size)
+            end_index = int(min((batch_index+1) * batch_size, cfg.test_sets.cur_frame_num))  # the residue may be smaller than a mini-batch
             output = extract_func(cfg.test_x.get_value()[start_index:end_index])
             output_mats.append(output)
 

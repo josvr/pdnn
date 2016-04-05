@@ -94,9 +94,9 @@ class SdA(object):
             cost, updates = dA.get_cost_updates(corruption_level, learning_rate, momentum)
             # compile the theano function
             fn = theano.function(inputs=[index,
-                              theano.Param(corruption_level, default=0.2),
-                              theano.Param(learning_rate, default=0.1),
-                              theano.Param(momentum, default=0.5)],
+                              theano.In(corruption_level, value=0.2),
+                              theano.In(learning_rate, value=0.1),
+                              theano.In(momentum, value=0.5)],
                               outputs=cost,
                               updates=updates,
                               givens={self.x: train_set_x[batch_begin:batch_end]})
@@ -205,8 +205,8 @@ class SdA_maxout(object):
                                                 learning_rate)
             # compile the theano function
             fn = theano.function(inputs=[index,
-                              theano.Param(corruption_level, default=0.2),
-                              theano.Param(learning_rate, default=0.1)],
+                              theano.In(corruption_level, valu=0.2),
+                              theano.In(learning_rate, value=0.1)],
                                  outputs=cost,
                                  updates=updates,
                                  givens={self.x: train_set_x[batch_begin:

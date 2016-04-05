@@ -27,11 +27,14 @@ from utils.utils import string2bool, parse_ignore_label, parse_map_label
 from .pfile_io import PfileDataRead, PfileDataReadStream
 from .pickle_io import PickleDataRead
 from .kaldi_io import KaldiDataRead
+from .model_io import log
 from .bloscpack_io import BloscPackDataRead
 
 def read_data_args(data_spec):
     elements = data_spec.split(",")
+    log("data argument = "+str(elements))
     pfile_path_list = sorted(glob.glob(elements[0]))
+    log("Found = "+str(pfile_path_list))
     dataset_args = {}
     # default settings
     dataset_args['type'] = 'pickle'

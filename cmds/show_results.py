@@ -4,6 +4,7 @@ import sys
 import os
 import pickle, gzip
 import bloscpack as bp
+from io_func.model_io import  log
 
 pred_file = sys.argv[1]
 
@@ -11,12 +12,10 @@ if '.gz' in pred_file:
     pred_mat = pickle.load(gzip.open(pred_file, 'rb'))
 else:
     pred_mat = pickle.load(open(pred_file, 'rb'))
-
-# load the testing set to get the labels
-prefix = "test.part*.blp"
-
-l = sorted(glob.glob(prefix))
-
+ 
+l = sorted(glob.glob(sys.argv[2]))
+if len(l) == 0:  
+	log("ERROR in show_results. Test partitions is empty. Argument "+sys.argv[2])
 test_data = bp.unpack_ndarray_file(l[0])
 test_labels = bp.unpack_ndarray_file(l[0]+".labels")
 test_labels = test_labels.astype(numpy.int32)

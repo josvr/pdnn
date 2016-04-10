@@ -1,5 +1,6 @@
-# Copyright 2014    Yajie Miao    Carnegie Mellon University
-#           2015    Yun Wang      Carnegie Mellon University
+# Copyright 2014    Yajie Miao        Carnegie Mellon University
+#           2015    Yun Wang          Carnegie Mellon University
+#           2016    Jos van Roosmalen Open University The Netherlands
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,7 +42,7 @@ if __name__ == '__main__':
     # check the arguments
     arg_elements = [sys.argv[i] for i in range(1, len(sys.argv))]
     arguments = parse_arguments(arg_elements)
-    required_arguments = ['data', 'nnet_param', 'nnet_cfg', 'output_file', 'layer_index', 'batch_size']
+    required_arguments = ['data', 'nnet_param', 'nnet_cfg', 'layer_index', 'batch_size']
     for arg in required_arguments:
         if (arg in arguments) == False:
             print("Error: the argument %s has to be specified" % (arg)); exit(1)
@@ -50,7 +51,6 @@ if __name__ == '__main__':
     data_spec = arguments['data']
     nnet_param = arguments['nnet_param']
     nnet_cfg = arguments['nnet_cfg']
-    output_file = arguments['output_file']
     layer_index = int(arguments['layer_index'])
     batch_size = float(arguments['batch_size'])
     argmax = 'argmax' in arguments and string2bool(arguments['argmax'])
@@ -80,7 +80,9 @@ if __name__ == '__main__':
     output_mats = []    # store the features for all the data in memory. TODO: output the features in a streaming mode
     log('> ... generating features from the specified layer')
     while (not cfg.test_sets.is_finish()):  # loop over the data
-        cfg.test_sets.load_next_partition(cfg.test_xy)
+        output_mats = []
+        f = cfg.test_sets.load_next_partition(cfg.test_xy)
+        _,onlyFilename = os.path.split(f)
         batch_num = int(math.ceil(1.0 * cfg.test_sets.cur_frame_num / batch_size))
 
         for batch_index in range(batch_num):  # loop over mini-batches
@@ -88,13 +90,9 @@ if __name__ == '__main__':
             end_index = int(min((batch_index+1) * batch_size, cfg.test_sets.cur_frame_num))  # the residue may be smaller than a mini-batch
             output = extract_func(cfg.test_x.get_value()[start_index:end_index])
             output_mats.append(output)
+        
+        output_mat = numpy.concatenate(output_mats)
+        with smart_open(str(onlyFilename)+".featuresExtract") as f:   
+            pickle.dump(output_mat, f, pickle.HIGHEST_PROTOCOL)
 
-    output_mat = numpy.concatenate(output_mats)
-    if argmax:
-        output_mat = output_mat.argmax(axis = 1)
-
-    # output the feature representations using pickle
-    f = smart_open(output_file, 'wb')
-    pickle.dump(output_mat, f, pickle.HIGHEST_PROTOCOL)
-
-    log('> ... the features are stored in ' + output_file)
+    log("> all features extracted")

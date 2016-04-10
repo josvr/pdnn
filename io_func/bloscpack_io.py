@@ -66,6 +66,7 @@ class BloscPackDataRead(object):
         if self.cur_pfile_index >= len(self.pfile_path_list):   # the end of one epoch
             self.end_reading = True
             self.cur_pfile_index = 0
+        return pfile_path
 
     def is_finish(self):
         return self.end_reading

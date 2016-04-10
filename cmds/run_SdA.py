@@ -116,7 +116,7 @@ if __name__ == '__main__':
         log('> ... the final Kaldi model is ' + cfg.kaldi_output_file)
     
     # finally remove the training-resuming files
-        if os.path.exists(wdir + '/sda.tmp'):
-                shutil.rmtree(wdir + '/sda.tmp')
-        if os.path.exists(wdir + '/sda_training_state.tmp'):
-                os.remove(wdir + '/sda_training_state.tmp')
+    if os.path.exists(wdir + '/sda.tmp'):
+       shutil.rmtree(wdir + '/sda.tmp')
+    if os.path.exists(wdir + '/sda_training_state.tmp'):
+       os.remove(wdir + '/sda_training_state.tmp')

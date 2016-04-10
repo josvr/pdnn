@@ -17,13 +17,10 @@ l = sorted(glob.glob(sys.argv[2]))
 if len(l) == 0:  
 	log("ERROR in show_results. Test partitions is empty. Argument "+sys.argv[2])
 
-test_data = bp.unpack_ndarray_file(l[0])
 test_labels = bp.unpack_ndarray_file(l[0]+".labels")
 test_labels = test_labels.astype(numpy.int32)
 
 for i in range (1,len(l)):
-    arr = bp.unpack_ndarray_file(l[i])
-    test_data = numpy.concatenate((test_data,arr))
     lab = bp.unpack_ndarray_file(l[i]+".labels")
     lab = lab.astype(numpy.int32)
     test_labels = numpy.concatenate((test_labels,lab))

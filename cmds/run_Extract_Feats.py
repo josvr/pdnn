@@ -92,7 +92,7 @@ if __name__ == '__main__':
             output_mats.append(output)
         
         output_mat = numpy.concatenate(output_mats)
-        with smart_open(str(onlyFilename)+".featuresExtract") as f:   
+        with open(str(onlyFilename)+".featuresExtract","wb") as f:   
             pickle.dump(output_mat, f, pickle.HIGHEST_PROTOCOL)
 
     log("> all features extracted")

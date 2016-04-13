@@ -82,21 +82,24 @@ def _nnet2file(layers, set_layer_num = -1, path="dnn.tmp", start_layer = 0, inpu
            dropout_factor = factor[i-1]
 
        if layer.type == 'fc':
-           tmpFileName = path + "/" + str(uuid.uuid4())+".blp";
-           nnet_dict[dict_a] = tmpFileName
+           n = str(uuid.uuid4())+".blp"
+           tmpFileName = path + "/" + n;
+           nnet_dict[dict_a] = n
            bp.pack_ndarray_file((1.0 - dropout_factor) * layer.W.get_value(), tmpFileName, chunk_size='100M', blosc_args=blosc_args)
        elif layer.type == 'conv':
            filter_shape = layer.filter_shape
            for next_X in range(filter_shape[0]):
                for this_X in range(filter_shape[1]):
-                   tmpFileName = path + "/" + str(uuid.uuid4())+".blp";
+                   n = str(uuid.uuid4())+".blp" 
+                   tmpFileName = path + "/" + n;
                    new_dict_a = dict_a + ' ' + str(next_X) + ' ' + str(this_X)
-                   nnet_dict[new_dict_a] = tmpFileName
+                   nnet_dict[new_dict_a] = n
                    bp.pack_ndarray_file((1.0-dropout_factor) * (layer.W.get_value())[next_X, this_X], tmpFileName, chunk_size='100M', blosc_args=blosc_args)
 
-       tmpFileName = path + "/" + str(uuid.uuid4())+".blp";
+       n = str(uuid.uuid4())+".blp"
+       tmpFileName = path + "/" + n;
        dict_a = 'b' + str(i)
-       nnet_dict[dict_a] = tmpFileName
+       nnet_dict[dict_a] = n
        bp.pack_ndarray_file(layer.b.get_value(),tmpFileName, chunk_size='100M', blosc_args=blosc_args)
 
     with open(path + '/metadata.tmp', 'wb') as fp:
@@ -128,7 +131,8 @@ def _file2nnet(layers, set_layer_num = -1, path="dnn.tmp",  factor=1.0):
         layer = layers[i]
         if layer.type == 'fc':
             mat_shape = layer.W.get_value().shape
-            layer.W.set_value(factor * np.asarray(bp.unpack_ndarray_file(nnet_dict[dict_a]), dtype=theano.config.floatX).reshape(mat_shape))
+            f = path + "/" + os.path.split(nnet_dict[dict_a])[1]
+            layer.W.set_value(factor * np.asarray(bp.unpack_ndarray_file(f), dtype=theano.config.floatX).reshape(mat_shape))
         elif layer.type == 'conv':
             filter_shape = layer.filter_shape
             W_array = layer.W.get_value()
@@ -136,10 +140,12 @@ def _file2nnet(layers, set_layer_num = -1, path="dnn.tmp",  factor=1.0):
                 for this_X in range(filter_shape[1]):
                     new_dict_a = dict_a + ' ' + str(next_X) + ' ' + str(this_X)
                     mat_shape = W_array[next_X, this_X, :, :].shape
-                    W_array[next_X, this_X, :, :] = factor * np.asarray(bp.unpack_ndarray_file(nnet_dict[new_dict_a]), dtype=theano.config.floatX).reshape(mat_shape)
+                    f = path + "/" + os.path.split(nnet_dict[new_dict_a])[1]
+                    W_array[next_X, this_X, :, :] = factor * np.asarray(bp.unpack_ndarray_file(f), dtype=theano.config.floatX).reshape(mat_shape)
             layer.W.set_value(W_array)
         dict_a = 'b' + str(i)
-        layer.b.set_value(np.asarray(bp.unpack_ndarray_file(nnet_dict[dict_a]), dtype=theano.config.floatX))
+        f = path + "/" + os.path.split(nnet_dict[dict_a])[1]
+        layer.b.set_value(np.asarray(bp.unpack_ndarray_file(f), dtype=theano.config.floatX))
 	
 def _cnn2file(conv_layers, filename='nnet.out', input_factor = 1.0, factor=[]):
     n_layers = len(conv_layers)

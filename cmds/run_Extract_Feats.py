@@ -73,6 +73,8 @@ if __name__ == '__main__':
     # initialize data reading
     cfg.init_data_reading_test(data_spec)
 
+    model.dumpLayerSize()
+
     # get the function for feature extraction
     log('> ... getting the feat-extraction function')
     extract_func = model.build_extract_feat_function(layer_index)

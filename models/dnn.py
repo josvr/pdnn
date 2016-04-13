@@ -30,7 +30,7 @@ from layers.logistic_sgd import LogisticRegression
 from layers.mlp import HiddenLayer, DropoutHiddenLayer, _dropout_from_layer
 
 from io_func import smart_open
-from io_func.model_io import _nnet2file, _file2nnet
+from io_func.model_io import log,_nnet2file, _file2nnet
 
 class DNN(object):
 
@@ -172,6 +172,12 @@ class DNN(object):
 
         return train_fn, valid_fn
 
+
+    def dumpLayerSize(self):
+        log("Start Dump layer size")
+        for i in range(0,len(self.layers))
+           log("Layer "+str(i)+" Length="+str(len(self.layers[i])))
+        log("End Dump layer")
 
     def build_extract_feat_function(self, output_layer):
 

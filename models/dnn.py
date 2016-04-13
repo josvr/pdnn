@@ -176,7 +176,7 @@ class DNN(object):
     def dumpLayerSize(self):
         log("Start Dump layer size")
         for i in range(0,len(self.layers))
-           log("Layer "+str(i)+" Length="+str(len(self.layers[i])))
+           log("Layer "+str(i)+" Length="+str(len(self.layers[i].output)))
         log("End Dump layer")
 
     def build_extract_feat_function(self, output_layer):

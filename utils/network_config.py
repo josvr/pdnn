@@ -22,6 +22,12 @@ from .learn_rates import LearningRateExpDecay
 from .utils import parse_lrate, parse_activation, parse_conv_spec, activation_to_txt, string2bool
 
 class NetworkConfig():
+    def totalNumerOfLayers(self): 
+        x = 0
+        if self.n_outs > 0:
+            x = x + 1
+        x += len( self.hidden_layers_sizes)
+        return x;
 
     def __init__(self):
 

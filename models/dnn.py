@@ -173,6 +173,9 @@ class DNN(object):
         return train_fn, valid_fn
 
 
+    def getNeuronsForLayer(self,index):
+        return self.layers[index].n_out
+
     def dumpLayerSize(self):
         log("Start Dump layer size")
         for i in range(0,len(self.layers)):

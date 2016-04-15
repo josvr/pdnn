@@ -97,8 +97,6 @@ if __name__ == '__main__':
         log("Going to output layer="+str(i))
         files = []
         layer_index = i
-        for p in perplexity:
-            files.append(createDataFile(output_path,'Layer'+str(layer_index)+'Perplexity'+str(p),countItems,2,initialDim,p))
 
         numpy_rng = numpy.random.RandomState(89677)
         theano_rng = RandomStreams(numpy_rng.randint(2 ** 30))
@@ -117,6 +115,10 @@ if __name__ == '__main__':
         cfg.init_data_reading_test(data_spec)
 
         model.dumpLayerSize()
+
+        initialDim = model.getNeuronsForLayer(layerNr)
+        for p in perplexity:
+            files.append(createDataFile(output_path,'Layer'+str(layer_index)+'Perplexity'+str(p),countItems,2,initialDim,p))
 
         # get the function for feature extraction
         log('> ... getting the feat-extraction function')

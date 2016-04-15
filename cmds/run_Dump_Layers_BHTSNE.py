@@ -48,7 +48,7 @@ def dumpInput(outputPath,perplexity,data_spec):
         count =  count + len(tmp)
     files = []
     for p in perplexity:
-        files.append(createDataFile(outputPath,'OriginalDataPerplexity'+str(p),count,2,dims,p))
+        files.append(createDataFile(outputPath,'OriginalData',count,2,dims,p))
     c = 0
     for inputFile in x:
         tmp = bp.unpack_ndarray_file(inputFile)
@@ -63,7 +63,7 @@ def dumpInput(outputPath,perplexity,data_spec):
 
 if __name__ == '__main__':
     
-    perplexity = [5,20,30,50]
+    perplexity = [20]
     
     import sys
 
@@ -118,7 +118,7 @@ if __name__ == '__main__':
 
         initialDim = model.getNeuronsForLayer(layerNr)
         for p in perplexity:
-            files.append(createDataFile(output_path,'Layer'+str(layer_index)+'Perplexity'+str(p),countItems,2,initialDim,p))
+            files.append(createDataFile(output_path,'Layer'+str(layer_index),countItems,2,initialDim,p))
 
         # get the function for feature extraction
         log('> ... getting the feat-extraction function')

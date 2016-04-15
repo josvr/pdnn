@@ -116,7 +116,7 @@ if __name__ == '__main__':
 
         model.dumpLayerSize()
 
-        initialDim = model.getNeuronsForLayer(layerNr)
+        initialDim = model.getNeuronsForLayer(i)
         for p in perplexity:
             files.append(createDataFile(output_path,'Layer'+str(layer_index),countItems,2,initialDim,p))
 

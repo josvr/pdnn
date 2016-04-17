@@ -94,7 +94,8 @@ if __name__ == '__main__':
     train_fn, valid_fn = dnn.build_finetune_functions(
                 (cfg.train_x, cfg.train_y), (cfg.valid_x, cfg.valid_y),
                 batch_size=cfg.batch_size)
-
+    lowest_validation_error = None
+    fail_count = 0
     log('> ... finetuning the model')
     while (cfg.lrate.get_rate() != 0):
         # one epoch of sgd training 
@@ -102,28 +103,49 @@ if __name__ == '__main__':
         log('> epoch %d, training error %f ' % (cfg.lrate.epoch, 100*numpy.mean(train_error)) + '(%)')
         # validation 
         valid_error = validate_by_minibatch(valid_fn, cfg)
-        log('> epoch %d, lrate %f, validation error %f ' % (cfg.lrate.epoch, cfg.lrate.get_rate(), 100*numpy.mean(valid_error)) + '(%)')
-        cfg.lrate.get_next_rate(current_error = 100*numpy.mean(valid_error))
+        valid_percent = 100*numpy.mean(valid_error)
+        msg = ""
+        if lowest_validation_error is None:
+            lowest_validation_error = valid_percent
+            msg += "(new low)"
+            fail_count = 0
+            saveModel(dnn,cfg)
+        else:
+            if valid_percent < lowest_validation_error:
+                msg += "(new low)"
+                fail_count = 0
+                saveModel(dnn,cfg)
+            else:
+                fail_count += 1
+                msg += "(failed count for "+str(fail_count)+")"
+
+        log('> epoch %d, lrate %f, validation error %f ' % (cfg.lrate.epoch, cfg.lrate.get_rate(), valid_percent) + '(%) '+msg)
+        cfg.lrate.get_next_rate(current_error = valid_percent )
+ 
         # output nnet parameters and lrate, for training resume
         if cfg.lrate.epoch % cfg.model_save_step == 0:
             _nnet2file(dnn.layers, path=wdir + '/dnn.tmp')
             _lrate2file(cfg.lrate, wdir + '/dnn_training_state.tmp') 
 
-    # save the model and network configuration
-    if cfg.param_output_file != '':
-        _nnet2file(dnn.layers, path=cfg.param_output_file, input_factor = cfg.input_dropout_factor, factor = cfg.dropout_factor)
-        log('> ... the final PDNN model parameter is ' + cfg.param_output_file)
-    if cfg.cfg_output_file != '':
-        _cfg2file(dnn.cfg, filename=cfg.cfg_output_file)
-        log('> ... the final PDNN model config is ' + cfg.cfg_output_file)
-
-    # output the model into Kaldi-compatible format
-    if cfg.kaldi_output_file != '':
-        dnn.write_model_to_kaldi(cfg.kaldi_output_file)
-        log('> ... the final Kaldi model is ' + cfg.kaldi_output_file) 
-
+    
     # remove the tmp files (which have been generated from resuming training) 
     if os.path.exists(wdir + '/dnn.tmp'):
         shutil.rmtree(wdir + '/dnn.tmp')
     if os.path.exists(wdir + '/dnn_training_state.tmp'):
         os.remove(wdir + '/dnn_training_state.tmp') 
+
+
+def saveModel(dnn,cfg):
+    # save the model and network configuration
+    if cfg.param_output_file != '':
+        _nnet2file(dnn.layers, path=cfg.param_output_file, input_factor = cfg.input_dropout_factor, factor = cfg.dropout_factor)
+        log('> ... the best PDNN model param so far is ' + cfg.param_output_file)
+    if cfg.cfg_output_file != '':
+        _cfg2file(dnn.cfg, filename=cfg.cfg_output_file)
+        log('> ... the best PDNN model config so far is ' + cfg.cfg_output_file)
+
+    # output the model into Kaldi-compatible format
+    if cfg.kaldi_output_file != '':
+        dnn.write_model_to_kaldi(cfg.kaldi_output_file)
+        log('> ... the best Kaldi model so far is ' + cfg.kaldi_output_file)
+

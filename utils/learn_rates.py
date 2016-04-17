@@ -199,6 +199,8 @@ class LearningRateAdaptive(LearningRate):
         self.max_fail = max_fail
         self.max_epoch = max_epoch
 
+        self.lowest_error = None
+
         self.epoch = 1
         self.prev_error = None
         self.fails = 0
@@ -214,12 +216,18 @@ class LearningRateAdaptive(LearningRate):
                 self.rate *= self.factor_inc
             elif current_error >= self.prev_error * self.thres_dec:
                 self.rate *= self.factor_dec
-            if current_error >= self.prev_error * self.thres_fail:
-                self.fails += 1
-                if self.fails >= self.max_fail:
-                    self.rate = 0.0
-            else:
+
+            if self.lowest_error is None:
+                self.lowest_error = current_error;
                 self.fails = 0
+            else:
+                if current_error > self.lowest_error * self.thres_fail:
+                     self.fails += 1
+                     if self.fails >= self.max_fail:
+                           self.rate = 0.0
+                else:
+                     self.lowest_error = current_error
+                     self.fails = 0
 
         self.epoch += 1
         self.prev_error = current_error

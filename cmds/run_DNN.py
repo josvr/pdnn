@@ -129,6 +129,7 @@ if __name__ == '__main__':
         else:
             if valid_percent < lowest_validation_error:
                 msg += "(new low)"
+                lowest_validation_error = valid_percent
                 fail_count = 0
                 saveModel(dnn,cfg)
             else:

@@ -37,6 +37,22 @@ from utils.learn_rates import _lrate2file, _file2lrate
 from utils.network_config import NetworkConfig
 from learning.sgd import train_sgd, validate_by_minibatch
 
+def saveModel(dnn,cfg):
+    log("> Start saveModel")
+    # save the model and network configuration
+    if cfg.param_output_file != '':
+        _nnet2file(dnn.layers, path=cfg.param_output_file, input_factor = cfg.input_dropout_factor, factor = cfg.dropout_factor)
+        log('> ... the best PDNN model param so far is ' + cfg.param_output_file)
+    if cfg.cfg_output_file != '':
+        _cfg2file(dnn.cfg, filename=cfg.cfg_output_file)
+        log('> ... the best PDNN model config so far is ' + cfg.cfg_output_file)
+
+    # output the model into Kaldi-compatible format
+    if cfg.kaldi_output_file != '':
+        dnn.write_model_to_kaldi(cfg.kaldi_output_file)
+        log('> ... the best Kaldi model so far is ' + cfg.kaldi_output_file)
+    log("< End SaveModel")
+
 if __name__ == '__main__':
 
     # check the arguments
@@ -135,18 +151,3 @@ if __name__ == '__main__':
         os.remove(wdir + '/dnn_training_state.tmp') 
 
 
-def saveModel(dnn,cfg):
-    log("> Start saveModel")
-    # save the model and network configuration
-    if cfg.param_output_file != '':
-        _nnet2file(dnn.layers, path=cfg.param_output_file, input_factor = cfg.input_dropout_factor, factor = cfg.dropout_factor)
-        log('> ... the best PDNN model param so far is ' + cfg.param_output_file)
-    if cfg.cfg_output_file != '':
-        _cfg2file(dnn.cfg, filename=cfg.cfg_output_file)
-        log('> ... the best PDNN model config so far is ' + cfg.cfg_output_file)
-
-    # output the model into Kaldi-compatible format
-    if cfg.kaldi_output_file != '':
-        dnn.write_model_to_kaldi(cfg.kaldi_output_file)
-        log('> ... the best Kaldi model so far is ' + cfg.kaldi_output_file)
-    log("< End SaveModel")

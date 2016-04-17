@@ -47,7 +47,7 @@ class BloscPackDataRead(object):
     def load_next_partition(self, shared_xy):
         pfile_path = self.pfile_path_list[self.cur_pfile_index]
         if self.feat_mat is None or len(self.pfile_path_list) > 1:
-            log("Start reading partition "+pfile_path) 
+            #log("Start reading partition "+pfile_path) 
             self.feat_mat = bp.unpack_ndarray_file(pfile_path)
             self.label_vec = bp.unpack_ndarray_file(pfile_path+".labels")  
             shared_x, shared_y = shared_xy
@@ -59,7 +59,7 @@ class BloscPackDataRead(object):
 
             shared_x.set_value(self.feat_mat, borrow=True)
             shared_y.set_value(self.label_vec.astype(theano.config.floatX), borrow=True)
-            log("Finished reading partition "+pfile_path)
+            #log("Finished reading partition "+pfile_path)
         self.cur_frame_num = len(self.feat_mat)
         self.cur_pfile_index += 1
 

@@ -136,6 +136,7 @@ if __name__ == '__main__':
 
 
 def saveModel(dnn,cfg):
+    log("> Start saveModel")
     # save the model and network configuration
     if cfg.param_output_file != '':
         _nnet2file(dnn.layers, path=cfg.param_output_file, input_factor = cfg.input_dropout_factor, factor = cfg.dropout_factor)
@@ -148,4 +149,4 @@ def saveModel(dnn,cfg):
     if cfg.kaldi_output_file != '':
         dnn.write_model_to_kaldi(cfg.kaldi_output_file)
         log('> ... the best Kaldi model so far is ' + cfg.kaldi_output_file)
-
+    log("< End SaveModel")

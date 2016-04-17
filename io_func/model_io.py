@@ -109,14 +109,42 @@ def _nnet2file(layers, set_layer_num = -1, path="dnn.tmp", start_layer = 0, inpu
 # save the config classes; since we are using pickle to serialize the whole class, it's better to set the
 # data reading and learning rate interfaces to None.
 def _cfg2file(cfg, filename='cfg.out'):
+    s1 = cfg.lrate
+    s2 = cfg.train_sets
+    s3 = cfg.train_xy
+    s4 = cfg.train_x
+    s5 = cfg.train_y
+    s6 = cfg.valid_sets
+    s7 = cfg.valid_xy
+    s8 = cfg.valid_x
+    s9 = cfg.valid_y
+    s10 = cfg.activation
+
     cfg.lrate = None
-    cfg.train_sets = None; cfg.train_xy = None; cfg.train_x = None; cfg.train_y = None
-    cfg.valid_sets = None; cfg.valid_xy = None; cfg.valid_x = None; cfg.valid_y = None
+    cfg.train_sets = None
+    cfg.train_xy = None
+    cfg.train_x = None
+    cfg.train_y = None
+    cfg.valid_sets = None 
+    cfg.valid_xy = None 
+    cfg.valid_x = None 
+    cfg.valid_y = None
     cfg.activation = None  # saving the rectifier function causes errors; thus we don't save the activation function
                            # the activation function is initialized from the activation text ("sigmoid") when the network
                            # configuration is loaded
     with open(filename, "wb") as output:
         pickle.dump(cfg, output, pickle.HIGHEST_PROTOCOL)
+    
+    cfg.lrate = s1
+    cfg.train_sets = s2
+    cfg.train_xy = s3
+    cfg.train_x = s4
+    cfg.train_y = s5
+    cfg.valid_sets = s6
+    cfg.valid_xy = s7
+    cfg.valid_x = s8 
+    cfg.valid_y = s9
+    cfg.activation = s10 
 
 def _file2nnet(layers, set_layer_num = -1, path="dnn.tmp",  factor=1.0):
     n_layers = len(layers)

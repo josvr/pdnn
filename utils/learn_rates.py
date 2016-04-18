@@ -235,7 +235,7 @@ class LearningRateAdaptive(LearningRate):
 
         self.epoch += 1
         self.prev_error = current_error
-        log("POST: current_error="+str(current_error)+" prev="+str( self.prev_error)+" lowest_error="+str( self.lowest_error)+ " epoch="+str(self.epoch)+" max epoch="+str(self.max_epoch)+" fails="+str(self.fails)+" max fail="+str(self.max_fail))
+        log("POST: rate="+str(self.rate)+" current_error="+str(current_error)+" prev="+str( self.prev_error)+" lowest_error="+str( self.lowest_error)+ " epoch="+str(self.epoch)+" max epoch="+str(self.max_epoch)+" fails="+str(self.fails)+" max fail="+str(self.max_fail))
         log("< get_next_rate")
         return self.rate
 

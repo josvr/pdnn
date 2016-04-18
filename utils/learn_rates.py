@@ -15,6 +15,8 @@
 
 import pickle
 
+from io_func.model_io import log
+
 from io_func import smart_open
 
 class LearningRate(object):
@@ -189,7 +191,7 @@ class LearningRateAdaptive(LearningRate):
                  thres_dec = 1.04, factor_dec = 0.7,
                  thres_fail = 1.00, max_fail = 6,
                  max_epoch = 100):
-
+        log("Init LearningRate Adaptive with lr_init="+str(lr_init)+"  thres_inc="+str( thres_inc)+" factor_inc="+str(factor_inc)+" thres_dec="+str(thres_dec)+" factor_dec="+str(factor_dec)+" thres_fail="+str(thres_fail)+" max_fail="+str(max_fail)+" max_epoch="+max_epoch);
         self.rate = lr_init
         self.thres_inc = thres_inc
         self.factor_inc = factor_inc
@@ -209,6 +211,7 @@ class LearningRateAdaptive(LearningRate):
         return self.rate
 
     def get_next_rate(self, current_error):
+        log("get_next_rate current_error="+str(current_error)+" prev="+str( self.prev_error)+" lowest_error="+str( self.lowest_error)+ " epoch="+str(self.epoch)+" max epoch="+str(self.max_epoch)+" fails="+str(self.fails)+" max fail="+str(self.max_fail))
         if self.epoch >= self.max_epoch:
             self.rate = 0.0
         elif self.prev_error is not None:

@@ -249,28 +249,3 @@ def _file2lrate(filename='file.in'):
     return pickle.load(smart_open(filename,'rb'))
 
 
-# functions to save and resume the learning rate
-# the following 4 fields are written into <lrate_file>, each field per line
-# lrate.epoch: the current epoch
-# lrate.rate: the current learning rate
-# lrate.lowest_error: the current lowest learning rate
-# lrate.decay: whether decay has started
-def save_lrate(lrate, lrate_file):
-    file_open = smart_open(lrate_file, 'w')  # always overwrite
-    file_open.write(str(lrate.epoch) + '\n')
-    file_open.write(str(lrate.rate) + '\n')
-    file_open.write(str(lrate.lowest_error) + '\n')
-    file_open.write(str(int(lrate.decay)) + '\n')
-    file_open.close()
-
-def resume_lrate(lrate, lrate_file):
-    file_open = smart_open(lrate_file, 'r')
-    line = file_open.readline().replace('\n','')
-    lrate.epoch = int(line)
-    line = file_open.readline().replace('\n','')
-    lrate.rate = float(line)
-    line = file_open.readline().replace('\n','')
-    lrate.lowest_error = float(line)
-    line = file_open.readline().replace('\n','')
-    lrate.decay = bool(int(line))
-    file_open.close()

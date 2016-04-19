@@ -119,7 +119,7 @@ class NetworkConfig():
             self.lrate = parse_lrate(arguments['lrate'])
         if 'l1_reg' in arguments:
             self.l1_reg = float(arguments['l1_reg'])
-        if 'l2_reg' in arguments:
+        if 'l2_reg' in arguments and str(arguments['l2_reg']).strip().lower() == 'default':
             self.l2_reg = float(arguments['l2_reg'])
         if 'max_col_norm' in arguments:
             self.max_col_norm = float(arguments['max_col_norm'])
@@ -136,7 +136,7 @@ class NetworkConfig():
         # parse dropout. note that dropout can be applied to the input features only when dropout is also
         # applied to hidden-layer outputs at the same time. that is, you cannot apply dropout only to the
         # input features
-        if 'dropout_factor' in arguments:
+        if 'dropout_factor' in arguments and str(arguments['dropout_factor']).strip().lower() == 'default':
             self.do_dropout = True
             factors = arguments['dropout_factor'].split(',')
             self.dropout_factor = [float(factor) for factor in factors]

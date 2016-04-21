@@ -33,9 +33,10 @@ from io_func import smart_open
 from io_func.model_io import _file2nnet, log
 from utils.utils import parse_arguments, string2bool
 from utils.network_config import NetworkConfig
+from utils.stop_handler import stop_if_stop_is_requested;
 
 if __name__ == '__main__':
-
+    stop_if_stop_is_requested()
     import sys
 
     # check the arguments
@@ -86,6 +87,7 @@ if __name__ == '__main__':
         batch_num = int(math.ceil(1.0 * cfg.test_sets.cur_frame_num / batch_size))
 
         for batch_index in range(batch_num):  # loop over mini-batches
+            stop_if_stop_is_requested()
             start_index = int(batch_index * batch_size)
             end_index = int(min((batch_index+1) * batch_size, cfg.test_sets.cur_frame_num))  # the residue may be smaller than a mini-batch
             output = extract_func(cfg.test_x.get_value()[start_index:end_index])

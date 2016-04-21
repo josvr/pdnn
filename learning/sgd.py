@@ -13,6 +13,8 @@
 # See the Apache 2 License for the specific language governing permissions and
 # limitations under the License.
 
+from io_func.model_io import log
+import numpy
 import theano.tensor as T
 from utils.learn_rates import LearningRateConstant, LearningRateExpDecay
 
@@ -69,6 +71,8 @@ def train_sgd(train_fn, cfg):
     while (not train_sets.is_finish()):
         train_sets.load_next_partition(train_xy)
         for batch_index in range(int(train_sets.cur_frame_num / batch_size)):  # loop over mini-batches
-            train_error.append(train_fn(index=batch_index, learning_rate = learning_rate, momentum = momentum))
+              ret = train_fn(index=batch_index, learning_rate = learning_rate, momentum = momentum)
+              log("Batch error: "+str(100*numpy.mean(ret)))
+              train_error.append(ret)
     train_sets.initialize_read()
     return train_error

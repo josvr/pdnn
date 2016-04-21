@@ -36,6 +36,7 @@ from utils.learn_rates import _lrate2file, _file2lrate
 
 from utils.network_config import NetworkConfig
 from learning.sgd import train_sgd, validate_by_minibatch
+from utils.stop_handler import stop_if_stop_is_requested;
 
 def saveModel(dnn,cfg):
     log("> Start saveModel")
@@ -54,7 +55,7 @@ def saveModel(dnn,cfg):
     log("< End SaveModel")
 
 if __name__ == '__main__':
-
+    stop_if_stop_is_requested()
     # check the arguments
     arg_elements = [sys.argv[i] for i in range(1, len(sys.argv))]
     arguments = parse_arguments(arg_elements)
@@ -117,6 +118,7 @@ if __name__ == '__main__':
     fail_count = 0
     log('> ... finetuning the model')
     while (cfg.lrate.get_rate() != 0):
+        stop_if_stop_is_requested()
         # one epoch of sgd training 
         train_error = train_sgd(train_fn, cfg)
         log('> epoch %d, training error %f ' % (cfg.lrate.epoch, 100*numpy.mean(train_error)) + '(%)')

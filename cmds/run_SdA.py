@@ -34,8 +34,10 @@ from utils.sda_config import SdAConfig
 from io_func.model_io import _nnet2file, _cfg2file, _file2nnet, log
 from utils.utils import parse_arguments, save_two_integers, read_two_integers
 
-if __name__ == '__main__':
+from utils.stop_handler import stop_if_stop_is_requested;
 
+if __name__ == '__main__':
+    stop_if_stop_is_requested()
     # check the arguments
     arg_elements = [sys.argv[i] for i in range(1, len(sys.argv))]
     arguments = parse_arguments(arg_elements)
@@ -82,11 +84,13 @@ if __name__ == '__main__':
     # layer by layer; for each layer, go through the epochs
     for i in range(start_layer_index, cfg.ptr_layer_number):
         for epoch in range(start_epoch_index, cfg.epochs):
+            stop_if_stop_is_requested()
             # go through the training set
             c = []
             while (not cfg.train_sets.is_finish()):
                 cfg.train_sets.load_next_partition(cfg.train_xy)
                 for batch_index in range(int(cfg.train_sets.cur_frame_num / cfg.batch_size)):  # loop over mini-batches
+                    stop_if_stop_is_requested()
                     c.append(pretraining_fns[i](index = batch_index,
                                                 corruption = cfg.corruption_levels[i],
                                                 lr = cfg.learning_rates[i],

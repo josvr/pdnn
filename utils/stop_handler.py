@@ -1,4 +1,5 @@
 # Globals
+import signal
 
 stop_requested = False
 init = False

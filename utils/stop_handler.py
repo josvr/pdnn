@@ -23,6 +23,7 @@ def stop_if_stop_is_requested():
    if init == False:
     init_signal_handler()
    if stop_requested: 
+        log("STOP REQUESTED")
         sys.exit(1)
    return
 

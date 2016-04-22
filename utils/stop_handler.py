@@ -10,12 +10,14 @@ def init_signal_handler():
        log("SIGUSR1 SIGNAL RECEIVED")
        global stopRequested 
        stopRequested = True
-         
+   
+   global init      
    log("SETUP SIGNAL HANDLER SIGUSR1")
    signal.signal(signal.SIGUSR1, handler)
    init = True
 
 def stop_if_stop_is_requested(): 
+   global init
    global stop_requested
    if init == False:
     init_signal_handler()

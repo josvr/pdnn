@@ -136,11 +136,11 @@ class NetworkConfig():
         # parse dropout. note that dropout can be applied to the input features only when dropout is also
         # applied to hidden-layer outputs at the same time. that is, you cannot apply dropout only to the
         # input features
-        if 'dropout_factor' in arguments and str(arguments['dropout_factor']).strip().lower() == 'default':
+        if 'dropout_factor' in arguments and str(arguments['dropout_factor']).strip().lower() <> 'default':
             self.do_dropout = True
             factors = arguments['dropout_factor'].split(',')
             self.dropout_factor = [float(factor) for factor in factors]
-            if 'input_dropout_factor' in arguments:
+            if 'input_dropout_factor' in arguments  and str(arguments['input_dropout_factor']).strip().lower() <> 'default':
                 self.input_dropout_factor = float(arguments['input_dropout_factor'])
 
         if 'cfg_output_file' in arguments:

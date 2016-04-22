@@ -1,6 +1,7 @@
 # Globals
 import signal
 from io_func.model_io import log
+import sys
 
 stop_requested = False
 init = False
@@ -8,8 +9,8 @@ init = False
 def init_signal_handler():
    def handler(x,y):
        log("SIGUSR1 SIGNAL RECEIVED")
-       global stopRequested 
-       stopRequested = True
+       global stop_requested 
+       stop_requested = True
    
    global init      
    log("SETUP SIGNAL HANDLER SIGUSR1")

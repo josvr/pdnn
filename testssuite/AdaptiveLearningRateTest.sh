@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # two variables you need to set
-pdnndir=../..  # pointer to PDNN
+pdnndir=..  # pointer to PDNN
 device=cpu # gpu0  # the device to be used. set it to "cpu" if you don't have GPUs
 
 # export environment variables

@@ -34,6 +34,6 @@ python3 $pdnndir/cmds/run_Extract_Feats.py --data "test.part*.blp" \
                                           --output-file "dnn.classify.pickle.gz" --layer-index -1 \
                                           --batch-size 100 >> nn.log 2>&1
 
-echo "Constant Learning Rate Test" >> testing
+echo "Constant Learning Rate Test" >> testing.log
 python3 $pdnndir/cmds/show_results.py dnn.classify.pickle.gz "test.part*.blp"  >> testing.log
 

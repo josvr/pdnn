@@ -71,7 +71,7 @@ def train_sgd(train_fn, cfg):
         train_sets.load_next_partition(train_xy)
         for batch_index in range(int(train_sets.cur_frame_num / batch_size)):  # loop over mini-batches
               ret = train_fn(index=batch_index,)
-              log("Batch error: "+str(100*numpy.mean(ret)))
+              #log("Batch error: "+str(100*numpy.mean(ret)))
               train_error.append(ret)
     train_sets.initialize_read()
     return train_error

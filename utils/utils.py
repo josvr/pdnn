@@ -67,12 +67,12 @@ def parse_lrate(lrate_string):
                                  min_epoch_decay_start=int(elements[4]))
         return lrate
 
-    # 'C:0.08:15'
+    # 'C:0.5:0.08:15'
     if elements[0] == 'C':  # Constant
-        if (len(elements) != 3):
+        if (len(elements) != 4):
             return None
-        lrate = LearningRateConstant(learning_rate=float(elements[1]),
-                                 epoch_num = int(elements[2]))
+        lrate = LearningRateConstant(momentum=float(elements[1]),learning_rate=float(elements[2]),
+                                 epoch_num = int(elements[3]))
         return lrate
 
     # 'MD:0.08:0.5:0.05,0.0002:8'

@@ -36,13 +36,13 @@ class LearningRate(object):
 
 class LearningRateConstant(LearningRate):
 
-    def __init__(self, learning_rate = 0.08, epoch_num = 20):
+    def __init__(self, momentum,learning_rate = 0.08, epoch_num = 20):
 
         self.learning_rate = learning_rate
         self.epoch = 1
         self.epoch_num = epoch_num
         self.rate = learning_rate
-        self.momentum=theano.shared(np.asarray(0.5, dtype=theano.config.floatX))
+        self.momentum=theano.shared(np.asarray(momentum, dtype=theano.config.floatX))
         self.tRate = theano.shared(np.asarray(self.rate, dtype=theano.config.floatX))
 
     def getOptimizerUpdates(self,cost,delta_params,params):

@@ -27,7 +27,7 @@ class SdAConfig():
 
         # parameters related with training 
         self.epochs = 5                  # number of training epochs for each layer
-        self.batch_size = 128            # size of mini-batches
+        self.batch_size = 256            # size of mini-batches
         self.corruption_levels=[0.2 for n in range(100)]  # denoising factor; we use an array for future extension to layer-specific factor
         self.learning_rates = [.01 for n in range(100)]   # learning rate for each layer
         self.momentum = 0                # momentum 

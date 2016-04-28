@@ -71,9 +71,12 @@ class LearningRateConstant(LearningRate):
 
 class LearningRateExpDecay(LearningRate):
 
-    def __init__(self, start_rate = 0.08, scale_by = 0.5,
+    def __init__(self, momentum=0.5,start_rate = 0.08, scale_by = 0.5,
                  min_derror_decay_start = 0.05, min_derror_stop = 0.05, init_error = 100,
                  decay=False, min_epoch_decay_start=15, zero_rate = 0.0):
+
+        self.momentum=theano.shared(np.asarray(momentum, dtype=theano.config.floatX))
+        self.tRate = theano.shared(np.asarray(start_rate, dtype=theano.config.floatX))
 
         self.start_rate = start_rate
         self.init_error = init_error
@@ -90,6 +93,16 @@ class LearningRateExpDecay(LearningRate):
 
         self.min_epoch_decay_start = min_epoch_decay_start
 
+    def getOptimizerUpdates(self,cost,delta_params,params):
+        updates = collections.OrderedDict()
+        # compute the gradients with respect to the model parameters
+        gparams = T.grad(cost, params)
+        # compute list of fine-tuning updates
+        updates = collections.OrderedDict()
+        for dparam, gparam in zip(delta_params, gparams):
+            updates[dparam] = self.momentum * dparam - gparam*self.tRate
+      
+        return updates
 
     def get_rate(self):
         return self.rate
@@ -112,6 +125,7 @@ class LearningRateExpDecay(LearningRate):
                 self.rate *= self.scale_by
 
         self.epoch += 1
+        self.tRate.set_value(self.rate)
         return self.rate
 
 
@@ -203,12 +217,12 @@ class LearningFixedLrate(LearningRate):
 
 class LearningRateAdaptive(LearningRate):
 
-    def __init__(self, lr_init = 0.08,
+    def __init__(self, momentum = 0.5,lr_init = 0.08,
                  thres_inc = 1.00, factor_inc = 1.05,
                  thres_dec = 1.04, factor_dec = 0.7,
                  thres_fail = 1.00, max_fail = 6,
                  max_epoch = 100):
-        log("Init LearningRate Adaptive with lr_init="+str(lr_init)+"  thres_inc="+str( thres_inc)+" factor_inc="+str(factor_inc)+" thres_dec="+str(thres_dec)+" factor_dec="+str(factor_dec)+" thres_fail="+str(thres_fail)+" max_fail="+str(max_fail)+" max_epoch="+str(max_epoch));
+        log("Init LearningRate Adaptive with momentum="+str(momentum)+" lr_init="+str(lr_init)+"  thres_inc="+str( thres_inc)+" factor_inc="+str(factor_inc)+" thres_dec="+str(thres_dec)+" factor_dec="+str(factor_dec)+" thres_fail="+str(thres_fail)+" max_fail="+str(max_fail)+" max_epoch="+str(max_epoch));
         self.rate = lr_init
         self.thres_inc = thres_inc
         self.factor_inc = factor_inc
@@ -223,6 +237,19 @@ class LearningRateAdaptive(LearningRate):
         self.epoch = 1
         self.prev_error = None
         self.fails = 0
+        self.momentum=theano.shared(np.asarray(momentum, dtype=theano.config.floatX))
+        self.tRate = theano.shared(np.asarray(self.rate, dtype=theano.config.floatX))
+
+    def getOptimizerUpdates(self,cost,delta_params,params):
+        updates = collections.OrderedDict()
+        # compute the gradients with respect to the model parameters
+        gparams = T.grad(cost, params)
+        # compute list of fine-tuning updates
+        updates = collections.OrderedDict()
+        for dparam, gparam in zip(delta_params, gparams):
+            updates[dparam] = self.momentum * dparam - gparam*self.tRate
+
+        return updates;
 
     def get_rate(self):
         return self.rate
@@ -254,6 +281,7 @@ class LearningRateAdaptive(LearningRate):
         self.prev_error = current_error
         log("POST: rate="+str(self.rate)+" current_error="+str(current_error)+" prev="+str( self.prev_error)+" lowest_error="+str( self.lowest_error)+ " epoch="+str(self.epoch)+" max epoch="+str(self.max_epoch)+" fails="+str(self.fails)+" max fail="+str(self.max_fail))
         log("< get_next_rate")
+        self.tRate.set_value(self.rate)
         return self.rate
 
 

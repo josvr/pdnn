@@ -35,7 +35,7 @@ class NetworkConfig():
 
         self.batch_size = 256
         self.momentum = 0.5
-        self.lrate = LearningRateExpDecay(start_rate=0.08, scale_by = 0.5,
+        self.lrate = LearningRateExpDecay(momentum=0.5,start_rate=0.08, scale_by = 0.5,
                                           min_derror_decay_start = 0.05,
                                           min_derror_stop = 0.05,
                                           min_epoch_decay_start=15)

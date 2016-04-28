@@ -102,16 +102,16 @@ def parse_lrate(lrate_string):
 
     # 'A:0.1:1.00,1.05:1.04,0.7:1.00,6:100'
     if elements[0] == 'A':  # Adaptive
-        if len(elements) != 6:
+        if len(elements) != 7:
             return None
-        lrate = LearningRateAdaptive(lr_init = float(elements[1]),
-                                     thres_inc = float(elements[2].split(',')[0]),
-                                     factor_inc = float(elements[2].split(',')[1]),
-                                     thres_dec = float(elements[3].split(',')[0]),
-                                     factor_dec = float(elements[3].split(',')[1]),
-                                     thres_fail = float(elements[4].split(',')[0]),
-                                     max_fail = float(elements[4].split(',')[1]),
-                                     max_epoch = int(elements[5]))
+        lrate = LearningRateAdaptive(momentum=float(elements[1]),lr_init = float(elements[2]),
+                                     thres_inc = float(elements[3].split(',')[0]),
+                                     factor_inc = float(elements[3].split(',')[1]),
+                                     thres_dec = float(elements[4].split(',')[0]),
+                                     factor_dec = float(elements[4].split(',')[1]),
+                                     thres_fail = float(elements[5].split(',')[0]),
+                                     max_fail = float(elements[5].split(',')[1]),
+                                     max_epoch = int(elements[6]))
         return lrate
 
 def parse_conv_spec(conv_spec, batch_size):

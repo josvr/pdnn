@@ -123,7 +123,6 @@ class DNN(object):
                 W = self.layers[i].W
                 self.finetune_cost += self.l2_reg * T.sqr(W).sum()
 
-
     def build_finetune_functions(self, train_shared_xy, valid_shared_xy, batch_size):
 
         (train_set_x, train_set_y) = train_shared_xy

@@ -150,16 +150,7 @@ class DNN_Dropout(object):
         (valid_set_x, valid_set_y) = valid_shared_xy
 
         index = T.lscalar('index')  # index to a [mini]batch
-        learning_rate = T.fscalar('learning_rate')
-        momentum = T.fscalar('momentum')
-
-        # compute the gradients with respect to the model parameters
-        gparams = T.grad(self.finetune_cost, self.params)
-
-        # compute list of fine-tuning updates
-        updates = collections.OrderedDict()
-        for dparam, gparam in zip(self.delta_params, gparams):
-            updates[dparam] = momentum * dparam - gparam*learning_rate
+        updates = self.cfg.lrate.getOptimizerUpdates(self.finetune_cost,self.delta_params,self.params)
         for dparam, param in zip(self.delta_params, self.params):
             updates[param] = param + updates[dparam]
 
@@ -172,8 +163,7 @@ class DNN_Dropout(object):
                     desired_norms = T.clip(col_norms, 0, self.max_col_norm)
                     updates[W] = updated_W * (desired_norms / (1e-7 + col_norms))
 
-        train_fn = theano.function(inputs=[index, theano.Param(learning_rate, default = 0.0001),
-              theano.Param(momentum, default = 0.5)],
+        train_fn = theano.function(inputs=[index],
               outputs=self.errors,
               updates=updates,
               givens={

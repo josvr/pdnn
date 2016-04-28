@@ -130,9 +130,8 @@ class DNN(object):
         (valid_set_x, valid_set_y) = valid_shared_xy
 
         index = T.lscalar('index')  # index to a [mini]batch
-        momentum = T.fscalar('momentum')
  
-        updates = self.cfg.lrate.getOptimizerUpdates(momentum,self.finetune_cost,self.delta_params,self.params)
+        updates = self.cfg.lrate.getOptimizerUpdates(self.finetune_cost,self.delta_params,self.params)
         
         for dparam, param in zip(self.delta_params, self.params):
             updates[param] = param + updates[dparam]
@@ -147,7 +146,7 @@ class DNN(object):
                     updates[W] = updated_W * (desired_norms / (1e-7 + col_norms))
 
         train_fn = theano.function(inputs=[index,
-              theano.In(momentum, value = 0.5)],
+              ],
               outputs=self.errors,
               updates=updates,
               givens={

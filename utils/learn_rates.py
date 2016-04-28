@@ -45,14 +45,14 @@ class LearningRateConstant(LearningRate):
         self.momentum=theano.shared(np.asarray(0.5, dtype=theano.config.floatX))
         self.tRate = theano.shared(np.asarray(self.rate, dtype=theano.config.floatX))
 
-    def getOptimizerUpdates(self,momentum,cost,delta_params,params):
+    def getOptimizerUpdates(self,cost,delta_params,params):
         updates = collections.OrderedDict()
         # compute the gradients with respect to the model parameters
         gparams = T.grad(cost, params)
         # compute list of fine-tuning updates
         updates = collections.OrderedDict()
         for dparam, gparam in zip(delta_params, gparams):
-            updates[dparam] = momentum * dparam - gparam*self.tRate
+            updates[dparam] = self.momentum * dparam - gparam*self.tRate
 
         return updates;
 

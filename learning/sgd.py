@@ -65,13 +65,12 @@ def train_sgd_verbose(train_fn, train_sets, train_xy, batch_size, learning_rate,
 def train_sgd(train_fn, cfg):
     train_sets = cfg.train_sets; train_xy = cfg.train_xy
     batch_size = cfg.batch_size
-    learning_rate = cfg.lrate.get_rate(); momentum = cfg.momentum 
     
     train_error = []
     while (not train_sets.is_finish()):
         train_sets.load_next_partition(train_xy)
         for batch_index in range(int(train_sets.cur_frame_num / batch_size)):  # loop over mini-batches
-              ret = train_fn(index=batch_index, momentum = momentum)
+              ret = train_fn(index=batch_index,)
               log("Batch error: "+str(100*numpy.mean(ret)))
               train_error.append(ret)
     train_sets.initialize_read()

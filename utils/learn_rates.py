@@ -14,6 +14,10 @@
 # limitations under the License.
 
 import pickle
+import numpy as np
+import theano
+import theano.tensor as T
+import collections
 
 from io_func.model_io import log
 
@@ -38,6 +42,19 @@ class LearningRateConstant(LearningRate):
         self.epoch = 1
         self.epoch_num = epoch_num
         self.rate = learning_rate
+        self.momentum=theano.shared(np.asarray(0.5, dtype=theano.config.floatX))
+        self.tRate = theano.shared(np.asarray(self.rate, dtype=theano.config.floatX))
+
+    def getOptimizerUpdates(self,momentum,cost,delta_params,params):
+        updates = collections.OrderedDict()
+        # compute the gradients with respect to the model parameters
+        gparams = T.grad(cost, params)
+        # compute list of fine-tuning updates
+        updates = collections.OrderedDict()
+        for dparam, gparam in zip(delta_params, gparams):
+            updates[dparam] = momentum * dparam - gparam*self.tRate
+
+        return updates;
 
     def get_rate(self):
         return self.rate
@@ -49,7 +66,7 @@ class LearningRateConstant(LearningRate):
         else:
             self.rate = self.learning_rate
         self.epoch += 1
-
+        self.tRate.set_value(self.rate)
         return self.rate
 
 class LearningRateExpDecay(LearningRate):

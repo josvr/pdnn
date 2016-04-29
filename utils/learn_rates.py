@@ -56,7 +56,7 @@ class LearningRateAdam(LearningRate):
         return self.rate
 
     def getOptimizerUpdates(self,cost,delta_params,params):
-        return adam(cost,params,self.learning_rate,self.beta1,self.beta2,self.epsilon,self.gamma)
+        return adam(cost,params,delta_params,self.learning_rate,self.beta1,self.beta2,self.epsilon,self.gamma)
 
     def get_next_rate(self, current_error):
         if self.epoch >= self.max_epoch:

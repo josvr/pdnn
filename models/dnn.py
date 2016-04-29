@@ -132,8 +132,8 @@ class DNN(object):
  
         updates = self.cfg.lrate.getOptimizerUpdates(self.finetune_cost,self.delta_params,self.params)
         
-        #for dparam, param in zip(self.delta_params, self.params):
-        #    updates[param] = param + updates[dparam]
+        for dparam, param in zip(self.delta_params, self.params):
+            updates[param] = param + updates[dparam]
 
         if self.max_col_norm is not None:
             for i in range(self.hidden_layers_number):

@@ -75,10 +75,10 @@ def parse_lrate(lrate_string):
                                  epoch_num = int(elements[3]))
         return lrate
 
-    #"ADAM:thres_fail:max__fail:max_epoch:learning_rate:beta1:beta2:epsilon"
-    #"ADAM:1.00:6:5:0.1:0.9:0.99:1e-8"
+    #"ADAM:thres_fail:max__fail:max_epoch:learning_rate:beta1:beta2:epsiloni:gamma"
+    #"ADAM:1.00:6:5:0.001:0.9:0.99:1e-8:1-1e-8"
     if elements[0] == 'ADAM':
-        lrate = LearningRateAdam(float(elements[1]),float(elements[2]),float(elements[3]),float(elements[4]),float(elements[5]),float(elements[6]),float(elements[7]))
+        lrate = LearningRateAdam(float(elements[1]),float(elements[2]),float(elements[3]),float(elements[4]),float(elements[5]),float(elements[6]),float(elements[7]),float(elements[8]))
         return lrate;
 
     # 'MD:0.08:0.5:0.05,0.0002:8'

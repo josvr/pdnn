@@ -36,12 +36,13 @@ class LearningRate(object):
         pass
 
 class LearningRateAdam(LearningRate):
-    def __init__(self,thres_fail = 1.00,max_fail=6,max_epoch=100,learning_rate=0.1, beta1=0.9,beta2=0.999, epsilon=1e-8):
-        log("Init Adam with thres_fail="+str(thres_fail)+" max_fail="+str(max_fail)+" max_epoch="+str(max_epoch)+" learning_rate="+str(learning_rate)+" beta1="+str(beta1)+" beta2="+str(beta2)+" epsilon="+str(epsilon))
+    def __init__(self,thres_fail = 1.00,max_fail=6,max_epoch=100,learning_rate=0.001, beta1=0.9,beta2=0.999, epsilon=1e-8,gamma=1-1e-8):
+        log("Init Adam with thres_fail="+str(thres_fail)+" max_fail="+str(max_fail)+" max_epoch="+str(max_epoch)+" learning_rate="+str(learning_rate)+" beta1="+str(beta1)+" beta2="+str(beta2)+" epsilon="+str(epsilon)+" gamma="+str(gamma))
         self.learning_rate =  theano.shared(np.asarray(learning_rate, dtype=theano.config.floatX))
         self.beta1 =  theano.shared(np.asarray(beta1, dtype=theano.config.floatX))
         self.beta2 =  theano.shared(np.asarray(beta2, dtype=theano.config.floatX))
         self.epsilon =  theano.shared(np.asarray(epsilon, dtype=theano.config.floatX))
+        self.gamma = theano.shared(np.asarray(gamma,dtype=theano.config.floatX))
         self.max_fail = max_fail
         self.max_epoch = max_epoch
         self.thres_fail = thres_fail
@@ -55,7 +56,7 @@ class LearningRateAdam(LearningRate):
         return self.rate
 
     def getOptimizerUpdates(self,cost,delta_params,params):
-        return adam(cost,params) # ,self.learning_rate,self.beta1,self.beta2,self.epsilon)
+        return adam(cost,params,self.learning_rate,self.beta1,self.beta2,self.epsilon,self.gamma)
 
     def get_next_rate(self, current_error):
         if self.epoch >= self.max_epoch:

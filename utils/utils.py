@@ -15,7 +15,7 @@
 # limitations under the License.
 
 import theano.tensor as T
-from .learn_rates import LearningRateConstant, LearningRateExpDecay, LearningMinLrate, LearningFixedLrate, LearningRateAdaptive
+from .learn_rates import LearningRateAdam,LearningRateConstant, LearningRateExpDecay, LearningMinLrate, LearningFixedLrate, LearningRateAdaptive
 from io_func import smart_open
 
 def string2bool(string):
@@ -74,6 +74,12 @@ def parse_lrate(lrate_string):
         lrate = LearningRateConstant(momentum=float(elements[1]),learning_rate=float(elements[2]),
                                  epoch_num = int(elements[3]))
         return lrate
+
+    #"ADAM:thres_fail:max__fail:max_epoch:learning_rate:beta1:beta2:epsilon"
+    #"ADAM:1.00:6:5:0.1:0.9:0.99:1e-8"
+    if elements[0] == 'ADAM':
+        lrate = LearningRateAdam(float(elements[1]),float(elements[2]),float(elements[3]),float(elements[4]),float(elements[5]),float(elements[6]),float(elements[7]))
+        return lrate;
 
     # 'MD:0.08:0.5:0.05,0.0002:8'
     if elements[0] == 'MD':  # Min-rate NewBob

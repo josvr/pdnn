@@ -18,6 +18,7 @@ import numpy as np
 import theano
 import theano.tensor as T
 import collections
+from utils.adam import adam
 
 from io_func.model_io import log
 
@@ -33,6 +34,48 @@ class LearningRate(object):
 
     def get_next_rate(self, current_error):
         pass
+
+class LearningRateAdam(LearningRate):
+    def __init__(self,thres_fail = 1.00,max_fail=6,max_epoch=100,learning_rate=0.1, beta1=0.9,beta2=0.999, epsilon=1e-8):
+        log("Init Adam with thres_fail="+str(thres_fail)+" max_fail="+str(max_fail)+" max_epoch="+str(max_epoch)+" learning_rate="+str(learning_rate)+" beta1="+str(beta1)+" beta2="+str(beta2)+" epsilon="+str(epsilon))
+        self.learning_rate =  theano.shared(np.asarray(learning_rate, dtype=theano.config.floatX))
+        self.beta1 =  theano.shared(np.asarray(beta1, dtype=theano.config.floatX))
+        self.beta2 =  theano.shared(np.asarray(beta2, dtype=theano.config.floatX))
+        self.epsilon =  theano.shared(np.asarray(epsilon, dtype=theano.config.floatX))
+        self.max_fail = max_fail
+        self.max_epoch = max_epoch
+        self.thres_fail = thres_fail
+        self.lowest_error = None
+        self.epoch = 1
+        self.rate = 1
+        self.prev_error = None
+        self.fails = 0
+
+    def get_rate(self):
+        return self.rate
+
+    def getOptimizerUpdates(self,cost,delta_params,params):
+        return adam(cost,params) # ,self.learning_rate,self.beta1,self.beta2,self.epsilon)
+
+    def get_next_rate(self, current_error):
+        if self.epoch >= self.max_epoch:
+            self.rate = 0.0
+
+        if self.lowest_error is None:
+           self.lowest_error = current_error;
+           self.fails = 0
+        else:
+           if current_error >= self.lowest_error * self.thres_fail:
+              self.fails += 1
+              if self.fails >= self.max_fail:
+                 self.rate = 0.0
+           else:
+                 self.lowest_error = current_error
+                 self.fails = 0
+
+        self.epoch += 1
+        self.prev_error = current_error
+        return self.rate
 
 class LearningRateConstant(LearningRate):
 

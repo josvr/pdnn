@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from io_func.model_io import log
+import math
 import numpy
 import theano.tensor as T
 from utils.learn_rates import LearningRateConstant, LearningRateExpDecay
@@ -29,7 +30,7 @@ def validate_by_minibatch_verbose(valid_fn, valid_sets, valid_xy, batch_size):
     valid_error = []
     while (not valid_sets.is_finish()):
         valid_sets.load_next_partition(valid_xy)
-        for batch_index in range(int(valid_sets.cur_frame_num / batch_size)):  # loop over mini-batches
+        for batch_index in range(math.ceil(valid_sets.cur_frame_num / batch_size)):  # loop over mini-batches
             valid_error.append(valid_fn(index=batch_index))
     valid_sets.initialize_read()
     return valid_error
@@ -40,7 +41,7 @@ def validate_by_minibatch(valid_fn, cfg):
     valid_error = []
     while (not valid_sets.is_finish()):
         valid_sets.load_next_partition(valid_xy)
-        for batch_index in range(int(valid_sets.cur_frame_num / batch_size)):  # loop over mini-batches
+        for batch_index in range(math.ceil(valid_sets.cur_frame_num / batch_size)):  # loop over mini-batches
             valid_error.append(valid_fn(index=batch_index))
     valid_sets.initialize_read()
     return valid_error
@@ -57,7 +58,7 @@ def train_sgd_verbose(train_fn, train_sets, train_xy, batch_size, learning_rate,
     train_error = []
     while (not train_sets.is_finish()):
         train_sets.load_next_partition(train_xy)
-        for batch_index in range(int(train_sets.cur_frame_num / batch_size)):  # loop over mini-batches
+        for batch_index in range(math.ceil(train_sets.cur_frame_num / batch_size)):  # loop over mini-batches
             train_error.append(train_fn(index=batch_index, learning_rate = learning_rate, momentum = momentum))
     train_sets.initialize_read()
     return train_error
@@ -65,13 +66,25 @@ def train_sgd_verbose(train_fn, train_sets, train_xy, batch_size, learning_rate,
 def train_sgd(train_fn, cfg):
     train_sets = cfg.train_sets; train_xy = cfg.train_xy
     batch_size = cfg.batch_size
-    
+    total_training_size = cfg.train_sets.get_total_size()
     train_error = []
+    total_batch = 0
+    total_items = 0 
     while (not train_sets.is_finish()):
         train_sets.load_next_partition(train_xy)
-        for batch_index in range(int(train_sets.cur_frame_num / batch_size)):  # loop over mini-batches
+        this_partition_size = len(train_xy[0].get_value())
+        
+        batch_items_over = this_partition_size
+        for batch_index in range(math.ceil(train_sets.cur_frame_num / batch_size)):  # loop over mini-batches
               ret = train_fn(index=batch_index,)
-              #log("Batch error: "+str(100*numpy.mean(ret)))
+              total_batch += 1
+              if batch_items_over - batch_size > 0: 
+                  total_items += batch_size
+                  batch_items_over -= batch_size
+              else:
+                  total_items += batch_items_over
+                  batch_items_over = 0
+              log("BE;"+str(cfg.lrate.epoch)+";"+str(total_batch)+";"+str(((cfg.lrate.epoch-1)*total_training_size)+(total_items))+";"+str(100*numpy.mean(ret)))
               train_error.append(ret)
     train_sets.initialize_read()
     return train_error

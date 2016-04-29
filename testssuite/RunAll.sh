@@ -8,6 +8,6 @@ rm *.log
 ./MaxOutTest.sh
 ./RectifierDropOutTest.sh
 ./SdATest.sh
-
-
+./AdamTest10EpochBaseline.sh
+./AdamTest10EpochCheckpointAndResume.sh
 

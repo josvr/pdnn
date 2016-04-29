@@ -43,6 +43,16 @@ class BloscPackDataRead(object):
         # other variables to be consistent with PfileDataReadStream
         self.cur_frame_num = 0
         self.end_reading = False
+        self.total_size = None
+
+    def get_total_size(self):
+        if self.total_size != None:
+            return self.total_size
+        self.total_size = 0
+        for f in self.pfile_path_list:
+            l = bp.unpack_ndarray_file(f+".labels")
+            self.total_size += len(l)
+        return self.total_size 
 
     def load_next_partition(self, shared_xy):
         pfile_path = self.pfile_path_list[self.cur_pfile_index]

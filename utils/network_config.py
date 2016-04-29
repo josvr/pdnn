@@ -69,6 +69,8 @@ class NetworkConfig():
         self.test_x = None
         self.test_y = None
 
+        self.interrupt_epoch = None
+
         # specifically for DNN
         self.n_ins = 0
         self.hidden_layers_sizes = []
@@ -160,11 +162,14 @@ class NetworkConfig():
     def parse_config_dnn(self, arguments, nnet_spec):
         self.parse_config_common(arguments)
         # parse DNN network structure
+        if 'interrupt_after_epoch' in arguments:
+           self.interrupt_epoch = int(arguments['interrupt_after_epoch'])
         nnet_layers = nnet_spec.split(':')
         self.n_ins = int(nnet_layers[0])
         self.hidden_layers_sizes = [int(nnet_layers[i]) for i in range(1, len(nnet_layers)-1)]
         self.n_outs = int(nnet_layers[-1])
         log(">> DNN Config parsed. Start Dump")
+        log("interrupt_epoch="+str(self.interrupt_epoch))
         log("batch_size="+str(self.batch_size))
         log("momentum="+str(self.momentum ))
         log("lrate="+str(self.lrate ))

@@ -142,6 +142,9 @@ if __name__ == '__main__':
                 msg += "(failed count for "+str(fail_count)+")"
 
         log('> epoch %d, lrate %f, validation error %f ' % (cfg.lrate.epoch, cfg.lrate.get_rate(), valid_percent) + '(%) '+msg)
+        if cfg.interrupt_epoch != None and cfg.lrate.epoch == cfg.interrupt_epoch: 
+            log("** GOING TO INTERRUPT as requested")
+            sys.exit(0)
         cfg.lrate.get_next_rate(current_error = valid_percent )
  
         # output nnet parameters and lrate, for training resume

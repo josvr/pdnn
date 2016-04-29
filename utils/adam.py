@@ -3,7 +3,7 @@ import theano
 import theano.tensor as T
 from collections import OrderedDict
 
-def adam(loss, all_params, dparams,learning_rate=0.001, b1=0.9, b2=0.999, e=1e-8,
+def adam(loss, all_params, dparams,t,m,v,learning_rate=0.001, b1=0.9, b2=0.999, e=1e-8,
          gamma=1-1e-8):
     """
     ADAM update rules
@@ -17,15 +17,9 @@ def adam(loss, all_params, dparams,learning_rate=0.001, b1=0.9, b2=0.999, e=1e-8
     updates = OrderedDict()
     all_grads = theano.grad(loss, all_params)
     alpha = learning_rate
-    t = theano.shared(np.asarray(1., dtype=theano.config.floatX))
     b1_t = b1*gamma**(t-1)   #(Decay the first moment running average coefficient)
 
-    for theta_previous, g,dparam in zip(all_params, all_grads,dparams):
-        m_previous = theano.shared(np.zeros(theta_previous.get_value().shape,
-                                            dtype=theano.config.floatX))
-        v_previous = theano.shared(np.zeros(theta_previous.get_value().shape,
-                                            dtype=theano.config.floatX))
-
+    for theta_previous, g,dparam,m_previous,v_previous in zip(all_params, all_grads,dparams,m,v):
         m = b1_t*m_previous + (1 - b1_t)*g                             # (Update biased first moment estimate)
         v = b2*v_previous + (1 - b2)*g**2                              # (Update biased second raw moment estimate)
         m_hat = m / (1-b1**t)                                          # (Compute bias-corrected first moment estimate)

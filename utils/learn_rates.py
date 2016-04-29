@@ -29,6 +29,12 @@ class LearningRate(object):
     def __init__(self):
         '''constructor'''
 
+    def save(self):
+        return None
+
+    def resume(self,input_value):
+        pass
+
     def get_rate(self):
         pass
 
@@ -51,12 +57,38 @@ class LearningRateAdam(LearningRate):
         self.rate = 1
         self.prev_error = None
         self.fails = 0
+        self.do_resume = False
 
     def get_rate(self):
         return self.rate
 
+    def save(self): 
+        log("Save state adam" )
+        m = [x.get_value() for x in self.m_previous]
+        v = [x.get_value() for x in self.v_previous]
+        t = self.t.get_value()
+        return (t,m,v)
+
+    def resume(self,obj): 
+        log("Resume state adam") 
+        self.resume_t = obj[0]
+        self.resume_m = obj[1]
+        self.resume_v = obj[2]
+        self.do_resume = True
+   
     def getOptimizerUpdates(self,cost,delta_params,params):
-        return adam(cost,params,delta_params,self.learning_rate,self.beta1,self.beta2,self.epsilon,self.gamma)
+        self.t = theano.shared(np.asarray(1., dtype=theano.config.floatX))
+        self.m_previous = [theano.shared(x.get_value() * 0.) for x in params] 
+        self.v_previous = [theano.shared(x.get_value() * 0.) for x in params]
+        if self.do_resume: 
+            log("Resume settings adam") 
+            self.t.set_value(self.resume_t)
+            for x,x1 in zip(self.m_previous,self.resume_m):
+                x.set_value(x1)
+            for x,x1 in zip(self.v_previous,self.resume_v):
+                x.set_value(x1)
+  
+        return adam(cost,params,delta_params,self.t,self.m_previous,self.v_previous,self.learning_rate,self.beta1,self.beta2,self.epsilon,self.gamma)
 
     def get_next_rate(self, current_error):
         if self.epoch >= self.max_epoch:
@@ -332,9 +364,14 @@ class LearningRateAdaptive(LearningRate):
 # save and load the learning rate class
 def _lrate2file(lrate, filename='file.out'):
     with smart_open(filename, "wb") as output:
-        pickle.dump(lrate, output, pickle.HIGHEST_PROTOCOL)
+        obj = lrate.save()
+        pickle.dump((lrate,obj), output, pickle.HIGHEST_PROTOCOL)
 
 def _file2lrate(filename='file.in'):
-    return pickle.load(smart_open(filename,'rb'))
+    lrate,obj = pickle.load(smart_open(filename,'rb'))
+    #log("Lrate ="+str(lrate))
+    #log("obj =" +str(obj))
+    lrate.resume(obj)
+    return lrate
 
 

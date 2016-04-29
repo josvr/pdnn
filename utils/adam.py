@@ -17,7 +17,7 @@ def adam(loss, all_params, dparams,learning_rate=0.001, b1=0.9, b2=0.999, e=1e-8
     updates = OrderedDict()
     all_grads = theano.grad(loss, all_params)
     alpha = learning_rate
-    t = theano.shared(np.float32(1))
+    t = theano.shared(np.asarray(1., dtype=theano.config.floatX))
     b1_t = b1*gamma**(t-1)   #(Decay the first moment running average coefficient)
 
     for theta_previous, g,dparam in zip(all_params, all_grads,dparams):

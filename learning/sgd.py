@@ -84,7 +84,7 @@ def train_sgd(train_fn, cfg):
               else:
                   total_items += batch_items_over
                   batch_items_over = 0
-              log("BE;"+str(cfg.lrate.epoch)+";"+str(total_batch)+";"+str(((cfg.lrate.epoch-1)*total_training_size)+(total_items))+";"+str(100*numpy.mean(ret)))
+              #log("BE;"+str(cfg.lrate.epoch)+";"+str(total_batch)+";"+str(((cfg.lrate.epoch-1)*total_training_size)+(total_items))+";"+str(100*numpy.mean(ret)))
               train_error.append(ret)
     train_sets.initialize_read()
     return train_error

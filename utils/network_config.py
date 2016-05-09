@@ -121,7 +121,7 @@ class NetworkConfig():
             self.lrate = parse_lrate(arguments['lrate'])
         if 'l1_reg' in arguments:
             self.l1_reg = float(arguments['l1_reg'])
-        if 'l2_reg' in arguments and str(arguments['l2_reg']).strip().lower() == 'default':
+        if 'l2_reg' in arguments and str(arguments['l2_reg']).strip().lower() != 'default':
             self.l2_reg = float(arguments['l2_reg'])
         if 'max_col_norm' in arguments:
             self.max_col_norm = float(arguments['max_col_norm'])

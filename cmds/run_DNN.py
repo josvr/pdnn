@@ -82,7 +82,7 @@ if __name__ == '__main__':
         ptr_file = arguments['ptr_file']
         ptr_layer_number = int(arguments['ptr_layer_number'])
  
-    log('Ptr-file '+ptr_file+' ptr layer='+str(ptr_layer_number));
+    log('Ptr-file "'+ptr_file+'" ptr layer='+str(ptr_layer_number));
 
     # check working dir to see whether it's resuming training
     resume_training = False
@@ -103,7 +103,7 @@ if __name__ == '__main__':
     # initialize model parameters
     # if not resuming training, initialized from the specified pre-training file
     # if resuming training, initialized from the tmp model file
-    if (ptr_layer_number != 0) and (resume_training is False):
+    if (ptr_file != '' and ptr_layer_number != 0) and (resume_training is False):
         log('>... Loading pretrained data from '+str(ptr_file))
         _file2nnet(dnn.layers, set_layer_num = ptr_layer_number, path = ptr_file)
     if resume_training:

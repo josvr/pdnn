@@ -80,7 +80,7 @@ if __name__ == '__main__':
     model.dumpLayerSize()
 
     # get the function for feature extraction
-    log('> ... getting the feat-extraction function for layer='+str(layer_idex))
+    log('> ... getting the feat-extraction function for layer='+str(layer_index))
     extract_func = model.build_extract_feat_function(layer_index)
 
     output_mats = []    # store the features for all the data in memory. TODO: output the features in a streaming mode

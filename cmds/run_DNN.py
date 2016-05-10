@@ -56,6 +56,9 @@ def saveModel(dnn,cfg):
 
 if __name__ == '__main__':
     stop_if_stop_is_requested()
+    log('Run DNN')
+    log('Theano Config:')
+    log(theano.config)
     # check the arguments
     arg_elements = [sys.argv[i] for i in range(1, len(sys.argv))]
     arguments = parse_arguments(arg_elements)

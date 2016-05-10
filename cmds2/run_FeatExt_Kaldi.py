@@ -24,7 +24,7 @@ import json
 
 import theano
 import theano.tensor as T
-from theano.tensor.shared_randomstreams import RandomStreams
+from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 
 from io_func import smart_open
 from io_func.model_io import _file2nnet, log

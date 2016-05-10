@@ -23,7 +23,7 @@ import numpy
 
 import theano
 import theano.tensor as T
-from theano.tensor.shared_randomstreams import RandomStreams
+from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 
 from io_func.model_io import _nnet2file, _cfg2file, _file2nnet, _cnn2file, _file2cnn, log
 from utils.utils import parse_arguments

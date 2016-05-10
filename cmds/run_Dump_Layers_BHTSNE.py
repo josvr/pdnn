@@ -26,7 +26,7 @@ import glob
 import numpy
 import theano
 import theano.tensor as T
-from theano.tensor.shared_randomstreams import RandomStreams
+from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 from utils.BHTSNEDropInReplacementTSNE import createDataFile,appendData,closeDataFile
 from models.dnn import DNN
 from models.cnn import CNN

@@ -55,6 +55,9 @@ if __name__ == '__main__':
     layer_index = int(arguments['layer_index'])
     batch_size = float(arguments['batch_size'])
     argmax = 'argmax' in arguments and string2bool(arguments['argmax'])
+    log("Extracting in batches with size="+str(batch_size))
+    if batch_size == -1:
+      log("Extracting all features per partition at once")
 
     # load network configuration and set up the model
     log('> ... setting up the model and loading parameters')
@@ -77,21 +80,26 @@ if __name__ == '__main__':
     model.dumpLayerSize()
 
     # get the function for feature extraction
-    log('> ... getting the feat-extraction function')
+    log('> ... getting the feat-extraction function for layer='+str(layer_idex))
     extract_func = model.build_extract_feat_function(layer_index)
 
     output_mats = []    # store the features for all the data in memory. TODO: output the features in a streaming mode
     log('> ... generating features from the specified layer')
     while (not cfg.test_sets.is_finish()):  # loop over the data
         cfg.test_sets.load_next_partition(cfg.test_xy)
-        batch_num = int(math.ceil(1.0 * cfg.test_sets.cur_frame_num / batch_size))
+        
+        if batch_size == -1:
+            output = extract_func(cfg.test_x.get_value())
+            output_mats.append(output)  
+        else: 
+            batch_num = int(math.ceil(1.0 * cfg.test_sets.cur_frame_num / batch_size))
 
-        for batch_index in range(batch_num):  # loop over mini-batches
-            stop_if_stop_is_requested()
-            start_index = int(batch_index * batch_size)
-            end_index = int(min((batch_index+1) * batch_size, cfg.test_sets.cur_frame_num))  # the residue may be smaller than a mini-batch
-            output = extract_func(cfg.test_x.get_value()[start_index:end_index])
-            output_mats.append(output)
+            for batch_index in range(batch_num):  # loop over mini-batches
+               stop_if_stop_is_requested()
+               start_index = int(batch_index * batch_size)
+               end_index = int(min((batch_index+1) * batch_size, cfg.test_sets.cur_frame_num))  # the residue may be smaller than a mini-batch
+               output = extract_func(cfg.test_x.get_value()[start_index:end_index])
+               output_mats.append(output)
 
     output_mat = numpy.concatenate(output_mats)
     if argmax:

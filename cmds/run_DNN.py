@@ -80,6 +80,8 @@ if __name__ == '__main__':
     ptr_layer_number = 0; ptr_file = ''
     if 'ptr_file' in arguments and 'ptr_layer_number' in arguments:
         ptr_file = arguments['ptr_file']
+        if ptr_file.lower() == 'default': 
+            ptr_file = ''
         ptr_layer_number = int(arguments['ptr_layer_number'])
  
     log('Ptr-file "'+ptr_file+'" ptr layer='+str(ptr_layer_number));

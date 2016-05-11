@@ -98,13 +98,18 @@ class LearningRateAdam(LearningRate):
            self.lowest_error = current_error;
            self.fails = 0
         else:
-           if current_error >= self.lowest_error * self.thres_fail:
+          if current_error >= self.lowest_error * self.thres_fail:
               self.fails += 1
               if self.fails >= self.max_fail:
                  self.rate = 0.0
-           else:
+          else:
+              if current_error < self.lowest_error * 0.995:
                  self.lowest_error = current_error
                  self.fails = 0
+              else:
+                 self.fails += 1
+                 if self.fails >= self.max_fail:
+                      self.rate = 0.0
 
         self.epoch += 1
         self.prev_error = current_error
@@ -349,9 +354,14 @@ class LearningRateAdaptive(LearningRate):
               self.fails += 1
               if self.fails >= self.max_fail:
                  self.rate = 0.0
-           else:
+           else: 
+              if current_error < self.lowest_error * 0.995:
                  self.lowest_error = current_error
                  self.fails = 0
+              else:
+                 self.fails += 1
+                 if self.fails >= self.max_fail:
+                      self.rate = 0.0
 
         self.epoch += 1
         self.prev_error = current_error

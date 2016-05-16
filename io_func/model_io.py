@@ -151,7 +151,8 @@ def _file2nnet(layers, set_layer_num = -1, path="dnn.tmp",  factor=1.0):
     nnet_dict = {}
     if set_layer_num == -1:
         set_layer_num = n_layers
-
+        log("file2nnet set_layer_num is -1 so set it to "+str(set_layer_num))
+    
     with open(path + '/metadata.tmp', 'rb') as fp:
         nnet_dict = pickle.load(fp)
     for i in range(set_layer_num):

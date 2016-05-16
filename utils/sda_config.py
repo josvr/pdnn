@@ -100,7 +100,7 @@ class SdAConfig():
 
         # parse pre-training layer number
         self.ptr_layer_number = len(self.hidden_layers_sizes)
-        if 'ptr_layer_number' in arguments:
+        if 'ptr_layer_number' in arguments and str(arguments['ptr_layer_number']).strip().lower() != 'default':
             self.ptr_layer_number = int(arguments['ptr_layer_number'])
 
         # parse activation function

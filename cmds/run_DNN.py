@@ -81,7 +81,7 @@ if __name__ == '__main__':
     # parse pre-training options
     # pre-training files and layer number (how many layers are set to the pre-training parameters)
     ptr_layer_number = 0; ptr_file = ''
-    if 'ptr_file' in arguments and 'ptr_layer_number' in arguments:
+    if 'ptr_file' in arguments and 'ptr_layer_number' in arguments and str(arguments['ptr_layer_number']).strip().lower() != 'default':
         ptr_file = arguments['ptr_file']
         if ptr_file.lower() == 'default': 
             ptr_file = ''
@@ -109,7 +109,7 @@ if __name__ == '__main__':
     # if not resuming training, initialized from the specified pre-training file
     # if resuming training, initialized from the tmp model file
     if (ptr_file != '' and ptr_layer_number != 0) and (resume_training is False):
-        log('>... Loading pretrained data from '+str(ptr_file))
+        log('>... Loading pretrained data from '+str(ptr_file)+" Layer "+str(ptr_layer_number))
         _file2nnet(dnn.layers, set_layer_num = ptr_layer_number, path = ptr_file)
     if resume_training:
         _file2nnet(dnn.layers, path = wdir + '/dnn.tmp')

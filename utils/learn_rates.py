@@ -44,11 +44,11 @@ class LearningRate(object):
 class LearningRateAdam(LearningRate):
     def __init__(self,thres_fail = 1.00,max_fail=6,max_epoch=100,learning_rate=0.001, beta1=0.9,beta2=0.999, epsilon=1e-8,gamma=1-1e-8):
         log("Init Adam with thres_fail="+str(thres_fail)+" max_fail="+str(max_fail)+" max_epoch="+str(max_epoch)+" learning_rate="+str(learning_rate)+" beta1="+str(beta1)+" beta2="+str(beta2)+" epsilon="+str(epsilon)+" gamma="+str(gamma))
-        self.learning_rate =  theano.shared(np.asarray(learning_rate, dtype=theano.config.floatX))
-        self.beta1 =  theano.shared(np.asarray(beta1, dtype=theano.config.floatX))
-        self.beta2 =  theano.shared(np.asarray(beta2, dtype=theano.config.floatX))
-        self.epsilon =  theano.shared(np.asarray(epsilon, dtype=theano.config.floatX))
-        self.gamma = theano.shared(np.asarray(gamma,dtype=theano.config.floatX))
+        self.learning_rate = learning_rate
+        self.beta1 = beta1
+        self.beta2 = beta2
+        self.epsilon = epsilon
+        self.gamma = gamma
         self.max_fail = max_fail
         self.max_epoch = max_epoch
         self.thres_fail = thres_fail
@@ -62,33 +62,8 @@ class LearningRateAdam(LearningRate):
     def get_rate(self):
         return self.rate
 
-    def save(self): 
-        log("Save state adam" )
-        m = [x.get_value() for x in self.m_previous]
-        v = [x.get_value() for x in self.v_previous]
-        t = self.t.get_value()
-        return (t,m,v)
-
-    def resume(self,obj): 
-        log("Resume state adam") 
-        self.resume_t = obj[0]
-        self.resume_m = obj[1]
-        self.resume_v = obj[2]
-        self.do_resume = True
-   
     def getOptimizerUpdates(self,cost,delta_params,params):
-        self.t = theano.shared(np.asarray(1., dtype=theano.config.floatX))
-        self.m_previous = [theano.shared(x.get_value() * 0.) for x in params] 
-        self.v_previous = [theano.shared(x.get_value() * 0.) for x in params]
-        if self.do_resume: 
-            log("Resume settings adam") 
-            self.t.set_value(self.resume_t)
-            for x,x1 in zip(self.m_previous,self.resume_m):
-                x.set_value(x1)
-            for x,x1 in zip(self.v_previous,self.resume_v):
-                x.set_value(x1)
-  
-        return adam(cost,params,delta_params,self.t,self.m_previous,self.v_previous,self.learning_rate,self.beta1,self.beta2,self.epsilon,self.gamma)
+        return adam(cost,params,delta_params,self.learning_rate,self.beta1,self.beta2,self.epsilon)
 
     def get_next_rate(self, current_error):
         if self.epoch >= self.max_epoch:

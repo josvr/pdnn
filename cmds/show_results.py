@@ -63,12 +63,26 @@ correct_number = 0.0
 print(subclass.shape)
 subclassificationData = numpy.zeros((subclassificationMapping.shape[0],3),dtype=numpy.int32)
 print("SHAPE "+str(subclassificationData.shape))
+tp=0
+tn=0
+fp=0
+fn=0
 for i in range(0,pred_mat.shape[0]):
     stop_if_stop_is_requested()
     p = pred_mat[i, :]
     p_sorted = (-p).argsort()
     subclassificationNumber = subclass[i]-1 
     numberCorrect = 0
+    if test_labels[i] == 1:
+       if p_sorted[0] == tst_labels[i]:
+             tp += 1
+       else:
+      	     fp += 1
+    if test_labels[i == 0:
+       if p_sorted[0] == test_labels[i]:
+             tn += 1
+       else
+             fn += 1
     if p_sorted[0] == test_labels[i]:
         correct_number += 1
         numberCorrect = 1
@@ -77,7 +91,10 @@ for i in range(0,pred_mat.shape[0]):
 
 # output the final error rate
 error_rate = 100 * (1.0 - correct_number / pred_mat.shape[0])
+auc=0.5*((tp/(tp+tn))+(tn/(tn+fp)))
+
 print('Error rate is ' + str(error_rate) + ' (%)')
+print('AUC is '+str(auc))
 
 theList = []
 for i in range(0,subclassificationData.shape[0]):

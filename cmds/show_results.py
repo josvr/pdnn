@@ -72,8 +72,8 @@ for i in range(0,pred_mat.shape[0]):
     if p_sorted[0] == test_labels[i]:
         correct_number += 1
         numberCorrect = 1
-    subclassificationData[subclassificationNumber-1,0] += 1
-    subclassificationData[subclassificationNumber-1,1] += numberCorrect
+    subclassificationData[subclassificationNumber,0] += 1
+    subclassificationData[subclassificationNumber,1] += numberCorrect
 
 # output the final error rate
 error_rate = 100 * (1.0 - correct_number / pred_mat.shape[0])
